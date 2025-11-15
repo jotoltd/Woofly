@@ -12,7 +12,9 @@
       "Bash(npx prisma migrate:*)",
       "Bash(cat:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
