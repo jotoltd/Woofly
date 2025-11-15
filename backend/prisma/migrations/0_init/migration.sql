@@ -1,16 +1,18 @@
 -- CreateTable
 CREATE TABLE "User" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "name" TEXT NOT NULL,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Pet" (
-    "id" TEXT NOT NULL PRIMARY KEY,
+    "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "species" TEXT NOT NULL,
     "breed" TEXT,
@@ -25,9 +27,13 @@ CREATE TABLE "Pet" (
     "vetName" TEXT,
     "vetPhone" TEXT,
     "medicalInfo" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" DATETIME NOT NULL,
-    CONSTRAINT "Pet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+    "isLost" BOOLEAN NOT NULL DEFAULT false,
+    "lostDate" TIMESTAMP(3),
+    "lastSeenLocation" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Pet_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -47,3 +53,9 @@ CREATE INDEX "Pet_nfcId_idx" ON "Pet"("nfcId");
 
 -- CreateIndex
 CREATE INDEX "Pet_userId_idx" ON "Pet"("userId");
+
+-- CreateIndex
+CREATE INDEX "Pet_isLost_idx" ON "Pet"("isLost");
+
+-- AddForeignKey
+ALTER TABLE "Pet" ADD CONSTRAINT "Pet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
