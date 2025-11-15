@@ -1,0 +1,204 @@
+.public-profile {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.public-header {
+  max-width: 800px;
+  margin: 0 auto 30px;
+  text-align: center;
+  color: white;
+}
+
+.public-header h1 {
+  font-size: 3em;
+  margin: 0 0 10px 0;
+}
+
+.public-header p {
+  font-size: 1.2em;
+  margin: 0;
+}
+
+.public-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pet-info-card,
+.contact-card,
+.medical-card,
+.emergency-notice {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  margin-bottom: 20px;
+}
+
+.public-pet-image {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto 20px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.public-pet-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.pet-info-card h2 {
+  margin-top: 0;
+  color: #667eea;
+  font-size: 2.5em;
+  text-align: center;
+}
+
+.pet-details p {
+  margin: 10px 0;
+  font-size: 1.1em;
+  color: #333;
+}
+
+.pet-details strong {
+  color: #667eea;
+  margin-right: 5px;
+}
+
+.contact-card h3,
+.medical-card h3,
+.emergency-notice h3 {
+  margin-top: 0;
+  color: #667eea;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+.contact-details p,
+.medical-details p {
+  margin: 15px 0;
+  font-size: 1.1em;
+}
+
+.contact-details a,
+.medical-details a {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-details a:hover,
+.medical-details a:hover {
+  text-decoration: underline;
+}
+
+.emergency-notice {
+  background: #fff3cd;
+  border-left: 5px solid #ffc107;
+}
+
+.emergency-notice h3 {
+  color: #856404;
+  border-bottom-color: #ffc107;
+}
+
+.emergency-notice p {
+  color: #856404;
+  margin: 10px 0 0;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  color: white;
+  font-size: 1.5em;
+}
+
+.error-message {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-message h2 {
+  color: #c33;
+  margin-top: 0;
+}
+
+.error-message p {
+  color: #666;
+  font-size: 1.1em;
+}
+
+.lost-alert-banner {
+  background: #dc3545;
+  color: white;
+  padding: 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+  animation: pulse 2s infinite;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 5px 20px rgba(220, 53, 69, 0.4);
+  }
+  50% {
+    box-shadow: 0 5px 30px rgba(220, 53, 69, 0.8);
+  }
+}
+
+.lost-alert-banner h2 {
+  margin: 0 0 15px 0;
+  font-size: 2em;
+}
+
+.lost-alert-banner .lost-info {
+  margin: 15px 0;
+  font-size: 1.1em;
+}
+
+.lost-alert-banner .lost-info p {
+  margin: 5px 0;
+}
+
+.lost-alert-banner .urgent-message {
+  margin: 15px 0 0 0;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .public-header h1 {
+    font-size: 2em;
+  }
+
+  .public-header p {
+    font-size: 1em;
+  }
+
+  .pet-info-card,
+  .contact-card,
+  .medical-card,
+  .emergency-notice {
+    padding: 20px;
+  }
+
+  .pet-info-card h2 {
+    font-size: 2em;
+  }
+}

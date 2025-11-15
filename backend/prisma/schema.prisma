@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pets      Pet[]
+}
+
+model Pet {
+  id          String   @id @default(uuid())
+  name        String
+  species     String
+  breed       String?
+  age         Int?
+  description String?
+  imageUrl    String?
+
+  // Unique identifiers for QR and NFC
+  qrCode      String   @unique @default(uuid())
+  nfcId       String   @unique @default(uuid())
+
+  // Owner information
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Contact information
+  ownerPhone  String?
+  ownerEmail  String?
+
+  // Emergency info
+  vetName     String?
+  vetPhone    String?
+  medicalInfo String?
+
+  // Lost pet information
+  isLost      Boolean  @default(false)
+  lostDate    DateTime?
+  lastSeenLocation String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([qrCode])
+  @@index([nfcId])
+  @@index([userId])
+  @@index([isLost])
+}
