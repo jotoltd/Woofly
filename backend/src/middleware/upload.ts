@@ -3,9 +3,11 @@ import path from 'path';
 import { Request } from 'express';
 
 // Configure storage
+// Note: Using /tmp for Vercel serverless compatibility
+// In production, consider using Supabase Storage or S3
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, '/tmp/');
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);

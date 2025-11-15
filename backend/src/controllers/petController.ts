@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthRequest } from '../middleware/auth';
+import { supabase } from '../utils/supabase';
+import fs from 'fs';
 
 const prisma = new PrismaClient();
 
@@ -272,14 +274,38 @@ export const uploadPetImage = async (req: AuthRequest, res: Response): Promise<v
       return;
     }
 
-    const imageUrl = `/uploads/${req.file.filename}`;
+    // Upload to Supabase Storage
+    const fileBuffer = fs.readFileSync(req.file.path);
+    const fileName = `${uuidv4()}-${req.file.originalname}`;
+
+    const { data, error } = await supabase.storage
+      .from('pet-images')
+      .upload(fileName, fileBuffer, {
+        contentType: req.file.mimetype,
+        cacheControl: '3600',
+        upsert: false
+      });
+
+    // Clean up temp file
+    fs.unlinkSync(req.file.path);
+
+    if (error) {
+      console.error('Supabase upload error:', error);
+      res.status(500).json({ error: 'Failed to upload image to storage' });
+      return;
+    }
+
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('pet-images')
+      .getPublicUrl(fileName);
 
     const updatedPet = await prisma.pet.update({
       where: { id },
-      data: { imageUrl },
+      data: { imageUrl: publicUrl },
     });
 
-    res.json({ imageUrl, pet: updatedPet });
+    res.json({ imageUrl: publicUrl, pet: updatedPet });
   } catch (error) {
     console.error('Upload pet image error:', error);
     res.status(500).json({ error: 'Internal server error' });

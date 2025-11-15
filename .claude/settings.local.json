@@ -15,7 +15,10 @@
       "Bash(git add:*)",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true\" npx prisma migrate deploy:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:5432/postgres\" npx prisma migrate deploy:*)",
+      "Bash(openssl rand:*)"
     ],
     "deny": [],
     "ask": []

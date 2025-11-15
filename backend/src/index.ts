@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import path from 'path';
 import authRoutes from './routes/authRoutes';
 import petRoutes from './routes/petRoutes';
 
@@ -14,8 +13,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Note: Images are now stored in Supabase Storage, not local filesystem
 
 // Routes
 app.use('/api/auth', authRoutes);
