@@ -291,6 +291,24 @@ const PublicPetProfile: React.FC = () => {
                     {contact.relation && <span className="contact-relation">{contact.relation}</span>}
                   </div>
                   <div className="contact-info">
+                    <div className="primary-contact-actions">
+                      {contact.phone && (
+                        <button
+                          className="primary-contact-btn call-btn"
+                          onClick={() => (window.location.href = `tel:${contact.phone}`)}
+                        >
+                          📞 Call
+                        </button>
+                      )}
+                      {contact.email && (
+                        <button
+                          className="primary-contact-btn email-btn"
+                          onClick={() => (window.location.href = `mailto:${contact.email}`)}
+                        >
+                          ✉️ Email
+                        </button>
+                      )}
+                    </div>
                     {contact.phone && (
                       <p>
                         <strong>Phone:</strong>{' '}
