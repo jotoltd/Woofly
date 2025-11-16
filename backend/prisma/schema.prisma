@@ -18,6 +18,41 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   pets      Pet[]
+  tags      Tag[]
+}
+
+model Tag {
+  id              String   @id @default(uuid())
+
+  // Activation code (printed on physical tag)
+  activationCode  String   @unique
+
+  // Tag identifier (what gets encoded in QR/NFC)
+  tagCode         String   @unique @default(uuid())
+
+  // Tag status
+  isActivated     Boolean  @default(false)
+  activatedAt     DateTime?
+
+  // Owner information
+  userId          String?
+  user            User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Associated pet
+  petId           String?  @unique
+  pet             Pet?     @relation(fields: [petId], references: [id], onDelete: SetNull)
+
+  // Tag production info
+  batchNumber     String?
+  productionDate  DateTime @default(now())
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([activationCode])
+  @@index([tagCode])
+  @@index([userId])
+  @@index([isActivated])
 }
 
 model Pet {
@@ -31,9 +66,12 @@ model Pet {
   description String?
   imageUrl    String?
 
-  // Unique identifiers for QR and NFC
-  qrCode      String   @unique @default(uuid())
-  nfcId       String   @unique @default(uuid())
+  // Linked tag (replaces qrCode/nfcId)
+  tag         Tag?
+
+  // Legacy fields (deprecated - keeping for backwards compatibility)
+  qrCode      String?   @unique
+  nfcId       String?   @unique
 
   // Owner information
   userId      String
@@ -52,6 +90,14 @@ model Pet {
   isLost      Boolean  @default(false)
   lostDate    DateTime?
   lastSeenLocation String?
+
+  // Privacy settings
+  showBreed           Boolean @default(true)
+  showAge             Boolean @default(true)
+  showMedicalInfo     Boolean @default(true)
+  showVetInfo         Boolean @default(true)
+  showOwnerPhone      Boolean @default(true)
+  showOwnerEmail      Boolean @default(true)
 
   // Relations
   contacts    Contact[]

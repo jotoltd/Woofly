@@ -1,31 +1,44 @@
-# WoofTrace - Pet Registration & Lost Pet Tracker
+# WoofTrace - The Trusted Smart Tag for Your Pet
 
-A full-stack web application for pet registration with unique QR codes and NFC identifiers. Helps reunite lost pets with their owners through scannable tags.
+Make it easy for someone to identify your pet, share where they are, and contact you – just by tapping or scanning the tag.
 
-## Features
+## Why WoofTrace?
 
-- **Pet Registration**: Register your pets with detailed information (name, species, breed, age, description)
-- **Photo Upload**: Add photos to pet profiles
-- **QR Code Generation**: Generate unique QR codes for each pet that can be printed and attached to collars
-- **NFC Support**: Each pet gets a unique NFC ID for NFC tag integration
-- **Public Pet Profiles**: Anyone can scan a QR code or NFC tag to view pet information
-- **Lost Pet Tracking**: Mark pets as lost with location and date information
-- **Lost Pet Alerts**: Public profiles show prominent alerts when pets are reported lost
-- **Owner Contact Info**: Display owner contact details on public profiles
-- **Veterinary Information**: Store and display emergency vet contact information
-- **Medical Information**: Track important medical notes, allergies, and medications
-- **Secure Authentication**: JWT-based authentication system
-- **Pet Management**: Edit pet information and delete pet profiles with confirmation
+No batteries. No apps. No monthly subscriptions. Just a simple, durable smart tag that helps bring your pet home safely.
+
+### Key Features
+
+- **Customisable Pet Profile**: Add your pet's photo, name, medical information, and emergency contacts
+- **Location Alerts**: Share where your pet was last seen with emergency contacts instantly
+- **Unlimited Emergency Contacts**: Add as many trusted contacts as you need
+- **Simple Activation**: Receive your tag, activate it online with your unique code, and attach it to your pet's collar
+- **Instant Scanning**: Anyone can tap or scan the tag to see your pet's profile and contact you immediately
+- **Privacy Controls**: Choose what information is visible to the public
+- **Veterinary Information**: Store emergency vet details and medical notes for quick access
+- **UK Data Hosting**: Your data is securely stored in the UK with GDPR compliance
+- **Durable Design**: Epoxy-coated tags built to withstand everyday wear and weather
+
+### No App Required
+
+Finders don't need to download anything - they simply tap or scan the tag with their phone to see your pet's profile and contact you.
+
+## How It Works
+
+1. **Order Your Tag**: Purchase a WoofTrace smart tag
+2. **Receive & Activate**: Your tag arrives with a unique activation code - activate it online in minutes
+3. **Create Pet Profile**: Add your pet's details, photo, and emergency contacts
+4. **Attach to Collar**: Securely attach the durable tag to your pet's collar
+5. **Peace of Mind**: If your pet is found, anyone can tap or scan the tag to contact you instantly
 
 ## Tech Stack
 
 ### Backend
 - **Runtime**: Node.js with TypeScript
 - **Framework**: Express.js
-- **Database**: SQLite with Prisma ORM
+- **Database**: PostgreSQL with Prisma ORM (UK hosted)
 - **Authentication**: JWT with bcrypt
-- **File Upload**: Multer
-- **QR Code Generation**: qrcode library
+- **Storage**: Supabase Storage
+- **Tag Technology**: QR Code and NFC compatible
 
 ### Frontend
 - **Framework**: React with TypeScript
@@ -92,14 +105,16 @@ The application will be available at:
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3000
 
-## Usage
+## For Developers
+
+### Local Development Setup
 
 1. **Register an account**: Create a new user account
-2. **Add a pet**: Register your pet with details and a photo
-3. **Generate QR code**: Create a QR code for your pet's collar tag
-4. **Print and attach**: Print the QR code and attach it to your pet's collar
-5. **Mark as lost**: If your pet goes missing, mark them as lost with location details
-6. **Public access**: Anyone who finds your pet can scan the QR code to see your contact information
+2. **Activate a tag**: Use the activation code system to link a tag to your account
+3. **Create pet profile**: Add your pet's details, photo, and emergency contacts
+4. **Tag management**: View and manage your active tags
+5. **Location sharing**: When a tag is scanned, share location with emergency contacts
+6. **Privacy settings**: Control what information is publicly visible
 
 ## Project Structure
 
@@ -129,19 +144,28 @@ WoofTrace/
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - Login user
 
+### Tag Activation
+- `POST /api/tags/activate` - Activate a tag with activation code
+- `GET /api/tags` - Get user's active tags
+
 ### Pets (Protected)
 - `GET /api/pets` - Get user's pets
-- `POST /api/pets` - Create new pet
+- `POST /api/pets` - Create new pet profile
 - `GET /api/pets/:id` - Get pet details
-- `PUT /api/pets/:id` - Update pet
-- `DELETE /api/pets/:id` - Delete pet
+- `PUT /api/pets/:id` - Update pet information
+- `DELETE /api/pets/:id` - Delete pet profile
 - `POST /api/pets/:id/upload` - Upload pet photo
-- `GET /api/pets/:id/qrcode` - Generate QR code
 - `PATCH /api/pets/:id/lost-status` - Toggle lost/found status
+- `PATCH /api/pets/:id/privacy` - Update privacy settings
 
-### Public
-- `GET /api/pets/public/qr/:qrCode` - Get pet by QR code
-- `GET /api/pets/public/nfc/:nfcId` - Get pet by NFC ID
+### Public (Tag Scanning)
+- `GET /api/scan/:tagCode` - Get pet profile by scanning tag
+- `POST /api/scan/:tagCode/alert` - Send location alert to emergency contacts
+
+### Emergency Contacts
+- `GET /api/pets/:id/contacts` - Get emergency contacts for pet
+- `POST /api/pets/:id/contacts` - Add emergency contact
+- `DELETE /api/contacts/:id` - Remove emergency contact
 
 ## License
 

@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes';
 import petRoutes from './routes/petRoutes';
 import contactRoutes from './routes/contactRoutes';
 import locationRoutes from './routes/locationRoutes';
+import tagRoutes from './routes/tagRoutes';
 
 dotenv.config();
 
@@ -22,6 +23,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/pets', petRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/location', locationRoutes);
+app.use('/api/tags', tagRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

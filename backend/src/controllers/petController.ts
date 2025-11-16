@@ -377,3 +377,41 @@ export const deletePet = async (req: AuthRequest, res: Response): Promise<void> 
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const updatePrivacySettings = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const { showBreed, showAge, showMedicalInfo, showVetInfo, showOwnerPhone, showOwnerEmail } = req.body;
+
+    const pet = await prisma.pet.findUnique({
+      where: { id },
+    });
+
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+
+    if (pet.userId !== req.userId) {
+      res.status(403).json({ error: 'Access denied' });
+      return;
+    }
+
+    const updatedPet = await prisma.pet.update({
+      where: { id },
+      data: {
+        showBreed: showBreed !== undefined ? showBreed : pet.showBreed,
+        showAge: showAge !== undefined ? showAge : pet.showAge,
+        showMedicalInfo: showMedicalInfo !== undefined ? showMedicalInfo : pet.showMedicalInfo,
+        showVetInfo: showVetInfo !== undefined ? showVetInfo : pet.showVetInfo,
+        showOwnerPhone: showOwnerPhone !== undefined ? showOwnerPhone : pet.showOwnerPhone,
+        showOwnerEmail: showOwnerEmail !== undefined ? showOwnerEmail : pet.showOwnerEmail,
+      },
+    });
+
+    res.json(updatedPet);
+  } catch (error) {
+    console.error('Update privacy settings error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
