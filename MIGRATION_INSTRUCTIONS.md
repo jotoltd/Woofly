@@ -2,7 +2,7 @@
 
 ## New Features Added
 
-This migration adds the following features to Woofly:
+This migration adds the following features to WoofTrace:
 
 1. **Location Sharing & Email Alerts** - Track when/where pet tags are scanned with GPS location
 2. **Unlimited Contacts** - Add multiple contacts per pet (owner, vet, friends, family)

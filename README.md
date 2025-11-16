@@ -1,4 +1,4 @@
-# Woofly - Pet Registration & Lost Pet Tracker
+# WoofTrace - Pet Registration & Lost Pet Tracker
 
 A full-stack web application for pet registration with unique QR codes and NFC identifiers. Helps reunite lost pets with their owners through scannable tags.
 
@@ -45,7 +45,7 @@ A full-stack web application for pet registration with unique QR codes and NFC i
 1. Clone the repository:
 ```bash
 git clone <your-repo-url>
-cd Woofly
+cd WoofTrace
 ```
 
 2. Install backend dependencies:
@@ -104,7 +104,7 @@ The application will be available at:
 ## Project Structure
 
 ```
-Woofly/
+WoofTrace/
 ├── backend/
 │   ├── src/
 │   │   ├── controllers/    # Request handlers
