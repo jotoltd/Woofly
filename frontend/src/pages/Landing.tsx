@@ -39,6 +39,16 @@ const Landing = () => {
               Activate Tag
             </button>
           </div>
+          <p className="hero-signin">
+            Already have an account?{' '}
+            <button
+              type="button"
+              className="link-button"
+              onClick={() => navigate('/login')}
+            >
+              Sign in
+            </button>
+          </p>
         </section>
 
         {/* Features Section */}

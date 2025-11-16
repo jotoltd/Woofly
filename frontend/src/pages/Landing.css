@@ -59,6 +59,23 @@
   min-width: 200px;
 }
 
+.hero-signin {
+  margin-top: var(--spacing-md);
+  color: var(--cloud-gray);
+  font-size: 0.95rem;
+}
+
+.hero-signin .link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--aurora-cyan);
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
