@@ -57,7 +57,7 @@ const PetProfile: React.FC = () => {
 
   useEffect(() => {
     fetchPet();
-    // Check if Web NFC is supported
+    // Check if Web NFC is supported (Android Chrome)
     if ('NDEFReader' in window) {
       setNfcSupported(true);
     }
@@ -562,22 +562,37 @@ const PetProfile: React.FC = () => {
             )}
 
             <div className="nfc-info">
-              <h3>NFC ID</h3>
+              <h3>NFC Tag Setup</h3>
               <p className="nfc-id">{pet.nfcId}</p>
-              <p className="nfc-instructions">
-                {nfcSupported ? (
-                  <>
-                    Tap "Write to NFC Tag" above to program an NFC tag directly from your mobile device.
-                    Hold your NFC tag near your phone when prompted.
-                    <br />
-                    Alternatively, you can manually write this URL to an NFC tag:
-                  </>
-                ) : (
-                  'Write this URL to an NFC tag and attach it to your pet\'s collar:'
-                )}
-                <br />
-                <code>{window.location.origin}/pet/nfc/{pet.nfcId}</code>
-              </p>
+
+              {nfcSupported ? (
+                <div className="nfc-instructions">
+                  <p><strong>✅ Android Detected</strong></p>
+                  <p>Tap "Write to NFC Tag" above to program an NFC tag directly from this browser. Hold your NFC tag near your phone when prompted.</p>
+                </div>
+              ) : (
+                <div className="nfc-instructions">
+                  <p><strong>📱 iPhone Users</strong></p>
+                  <p>iPhones can read NFC tags automatically but need an app to write them. Use one of these free apps:</p>
+                  <ul style={{ textAlign: 'left', marginTop: '10px' }}>
+                    <li><strong>NFC Tools</strong> - Most popular, easy to use</li>
+                    <li><strong>NFC TagWriter by NXP</strong> - Official NXP app</li>
+                    <li><strong>Simply NFC</strong> - Simple interface</li>
+                  </ul>
+                  <p style={{ marginTop: '15px' }}>In the app, create a new tag with "URL/Website" and paste:</p>
+                </div>
+              )}
+
+              <div style={{ marginTop: '15px', padding: '15px', background: 'white', borderRadius: '5px', border: '1px solid #ddd' }}>
+                <p style={{ margin: '0 0 5px 0', fontSize: '12px', color: '#666' }}>URL to write to NFC tag:</p>
+                <code style={{ fontSize: '14px', wordBreak: 'break-all' }}>{window.location.origin}/pet/nfc/{pet.nfcId}</code>
+              </div>
+
+              <div className="nfc-instructions" style={{ marginTop: '15px', padding: '15px', background: '#e8f5e9', borderRadius: '5px' }}>
+                <p style={{ margin: 0, fontSize: '14px', color: '#2e7d32' }}>
+                  <strong>💡 Tip:</strong> Once programmed, anyone with an iPhone (iOS 14+) or Android can tap the tag - no app needed to read it!
+                </p>
+              </div>
             </div>
           </div>
         </div>

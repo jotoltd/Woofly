@@ -307,6 +307,21 @@
   line-height: 1.6;
 }
 
+.nfc-instructions ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.nfc-instructions ul li {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.nfc-instructions ul li:last-child {
+  border-bottom: none;
+}
+
 .nfc-info {
   padding: 20px;
   background: #f9f9f9;
