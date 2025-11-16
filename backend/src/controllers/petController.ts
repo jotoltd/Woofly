@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
 
 export const createPet = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { name, species, breed, age, description, ownerPhone, ownerEmail, vetName, vetPhone, medicalInfo } = req.body;
+    const { name, species, breed, age, sex, color, description, ownerPhone, ownerEmail, vetName, vetPhone, medicalInfo } = req.body;
 
     if (!name || !species) {
       res.status(400).json({ error: 'Name and species are required' });
@@ -27,6 +27,8 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
         species,
         breed,
         age: age ? parseInt(age) : null,
+        sex,
+        color,
         description,
         qrCode,
         nfcId,

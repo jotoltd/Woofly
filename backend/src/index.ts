@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/authRoutes';
 import petRoutes from './routes/petRoutes';
+import contactRoutes from './routes/contactRoutes';
+import locationRoutes from './routes/locationRoutes';
 
 dotenv.config();
 
@@ -18,6 +20,8 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/pets', petRoutes);
+app.use('/api/contacts', contactRoutes);
+app.use('/api/location', locationRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
