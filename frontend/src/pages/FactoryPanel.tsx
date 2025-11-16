@@ -23,10 +23,39 @@ interface Stats {
   batches: { batchNumber: string; count: number }[];
 }
 
+interface UserPetSummary {
+  id: string;
+  name: string;
+  species: string;
+  tag?: {
+    tagCode: string;
+    activationCode: string;
+  } | null;
+}
+
+interface UserSummary {
+  id: string;
+  email: string;
+  name: string;
+  createdAt: string;
+  pets: UserPetSummary[];
+  tags: {
+    id: string;
+    tagCode: string;
+    activationCode: string;
+    isActivated: boolean;
+    pet?: {
+      id: string;
+      name: string;
+      species: string;
+    } | null;
+  }[];
+}
+
 const FactoryPanel: React.FC = () => {
   const { admin, adminLogout } = useAdmin();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'generate' | 'tags' | 'stats'>('generate');
+  const [activeTab, setActiveTab] = useState<'generate' | 'tags' | 'stats' | 'users'>('generate');
 
   // Generate form
   const [quantity, setQuantity] = useState('10');
@@ -42,6 +71,10 @@ const FactoryPanel: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loadingStats, setLoadingStats] = useState(false);
 
+  // Users
+  const [users, setUsers] = useState<UserSummary[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
   // Selected tag for programming
   const [_selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [programmingData, setProgrammingData] = useState<any>(null);
@@ -51,6 +84,8 @@ const FactoryPanel: React.FC = () => {
       fetchTags();
     } else if (activeTab === 'stats') {
       fetchStats();
+    } else if (activeTab === 'users') {
+      fetchUsers();
     }
   }, [activeTab]);
 
@@ -98,6 +133,18 @@ const FactoryPanel: React.FC = () => {
       console.error('Failed to fetch stats:', error);
     } finally {
       setLoadingStats(false);
+    }
+  };
+
+  const fetchUsers = async () => {
+    setLoadingUsers(true);
+    try {
+      const response = await api.get('/admin/factory/users');
+      setUsers(response.data.users || []);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
+    } finally {
+      setLoadingUsers(false);
     }
   };
 
@@ -179,6 +226,12 @@ const FactoryPanel: React.FC = () => {
           >
             Statistics
           </button>
+          <button
+            className={`tab ${activeTab === 'users' ? 'active' : ''}`}
+            onClick={() => setActiveTab('users')}
+          >
+            Users
+          </button>
         </div>
 
         {activeTab === 'generate' && (
@@ -250,6 +303,83 @@ const FactoryPanel: React.FC = () => {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'users' && (
+          <div className="tab-content">
+            <div className="tags-section glass-card">
+              <h2>Users & Linked Assets</h2>
+              {loadingUsers ? (
+                <p>Loading users...</p>
+              ) : users.length === 0 ? (
+                <p>No users found yet.</p>
+              ) : (
+                <div className="tags-table-container">
+                  <table className="tags-table">
+                    <thead>
+                      <tr>
+                        <th>User</th>
+                        <th>Email</th>
+                        <th>Joined</th>
+                        <th>Pets</th>
+                        <th>Tags</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {users.map((user) => (
+                        <tr key={user.id}>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>{new Date(user.createdAt).toLocaleDateString()}</td>
+                          <td>
+                            {user.pets.length === 0 ? (
+                              <span>-</span>
+                            ) : (
+                              <ul className="user-pets-list">
+                                {user.pets.map((pet) => (
+                                  <li key={pet.id}>
+                                    <strong>{pet.name}</strong> ({pet.species})
+                                    {pet.tag && (
+                                      <>
+                                        {' '}- Tag: <code>{pet.tag.tagCode}</code>
+                                      </>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </td>
+                          <td>
+                            {user.tags.length === 0 ? (
+                              <span>-</span>
+                            ) : (
+                              <ul className="user-pets-list">
+                                {user.tags.map((tag) => (
+                                  <li key={tag.id}>
+                                    <code>{tag.tagCode}</code>
+                                    {tag.isActivated ? (
+                                      <span className="badge badge-success">Activated</span>
+                                    ) : (
+                                      <span className="badge badge-warning">Pending</span>
+                                    )}
+                                    {tag.pet && (
+                                      <>
+                                        {' '}- Pet: <strong>{tag.pet.name}</strong> ({tag.pet.species})
+                                      </>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               )}
             </div>

@@ -192,3 +192,50 @@ export const getProgrammingData = async (req: AdminRequest, res: Response): Prom
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const getUsersWithAssets = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        pets: {
+          select: {
+            id: true,
+            name: true,
+            species: true,
+            tag: {
+              select: {
+                tagCode: true,
+                activationCode: true,
+              },
+            },
+          },
+        },
+        tags: {
+          select: {
+            id: true,
+            tagCode: true,
+            activationCode: true,
+            isActivated: true,
+            pet: {
+              select: {
+                id: true,
+                name: true,
+                species: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    res.json({ users });
+  } catch (error) {
+    console.error('Get users with assets error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
