@@ -101,3 +101,36 @@ button[type='submit']:disabled {
 .auth-card p a:hover {
   text-decoration: underline;
 }
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 15px;
+  }
+
+  .auth-card {
+    padding: 25px;
+  }
+
+  .auth-card h1 {
+    font-size: 2em;
+  }
+
+  .auth-card h2 {
+    font-size: 1.2em;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 20px;
+  }
+
+  .auth-card h1 {
+    font-size: 1.8em;
+  }
+
+  .form-group input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

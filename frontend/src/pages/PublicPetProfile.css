@@ -183,6 +183,10 @@
 }
 
 @media (max-width: 768px) {
+  .public-profile {
+    padding: 15px;
+  }
+
   .public-header h1 {
     font-size: 2em;
   }
@@ -200,5 +204,56 @@
 
   .pet-info-card h2 {
     font-size: 2em;
+  }
+
+  .lost-alert-banner {
+    padding: 20px;
+  }
+
+  .lost-alert-banner h2 {
+    font-size: 1.5em;
+  }
+
+  .lost-alert-banner .urgent-message {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 480px) {
+  .public-profile {
+    padding: 10px;
+  }
+
+  .public-header h1 {
+    font-size: 1.6em;
+  }
+
+  .public-header p {
+    font-size: 0.9em;
+  }
+
+  .pet-info-card,
+  .contact-card,
+  .medical-card,
+  .emergency-notice {
+    padding: 15px;
+  }
+
+  .pet-info-card h2 {
+    font-size: 1.6em;
+  }
+
+  .pet-details p,
+  .contact-details p,
+  .medical-details p {
+    font-size: 1em;
+  }
+
+  .lost-alert-banner {
+    padding: 15px;
+  }
+
+  .lost-alert-banner h2 {
+    font-size: 1.3em;
   }
 }

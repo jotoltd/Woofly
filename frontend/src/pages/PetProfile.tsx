@@ -40,6 +40,8 @@ const PetProfile: React.FC = () => {
     lastSeenLocation: '',
   });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [nfcSupported, setNfcSupported] = useState(false);
+  const [nfcWriting, setNfcWriting] = useState(false);
   const [editForm, setEditForm] = useState({
     name: '',
     species: '',
@@ -55,6 +57,10 @@ const PetProfile: React.FC = () => {
 
   useEffect(() => {
     fetchPet();
+    // Check if Web NFC is supported
+    if ('NDEFReader' in window) {
+      setNfcSupported(true);
+    }
   }, [id]);
 
   const fetchPet = async () => {
@@ -232,6 +238,41 @@ const PetProfile: React.FC = () => {
     } catch (error) {
       console.error('Error deleting pet:', error);
       alert('Failed to delete pet');
+    }
+  };
+
+  const writeNFC = async () => {
+    if (!pet || !nfcSupported) {
+      alert('NFC is not supported on this device');
+      return;
+    }
+
+    try {
+      setNfcWriting(true);
+      // @ts-ignore - Web NFC API types may not be available
+      const ndef = new NDEFReader();
+
+      const nfcUrl = `${window.location.origin}/pet/nfc/${pet.nfcId}`;
+
+      await ndef.write({
+        records: [
+          { recordType: "url", data: nfcUrl },
+          { recordType: "text", data: `Woofly Pet: ${pet.name}` }
+        ]
+      });
+
+      alert('NFC tag written successfully! Tap your NFC tag to the device now.');
+    } catch (error: any) {
+      console.error('NFC write error:', error);
+      if (error.name === 'NotAllowedError') {
+        alert('NFC permission denied. Please allow NFC access in your browser settings.');
+      } else if (error.name === 'NotSupportedError') {
+        alert('NFC is not supported on this device.');
+      } else {
+        alert(`Failed to write NFC tag: ${error.message}`);
+      }
+    } finally {
+      setNfcWriting(false);
     }
   };
 
@@ -495,6 +536,16 @@ const PetProfile: React.FC = () => {
               <button onClick={copyNFCId} className="action-btn">
                 Copy NFC ID
               </button>
+              {nfcSupported && (
+                <button
+                  onClick={writeNFC}
+                  className="action-btn"
+                  disabled={nfcWriting}
+                  style={{ background: nfcWriting ? '#999' : '#28a745' }}
+                >
+                  {nfcWriting ? 'Writing NFC...' : 'Write to NFC Tag'}
+                </button>
+              )}
             </div>
 
             {showQR && qrCodeImage && (
@@ -514,8 +565,16 @@ const PetProfile: React.FC = () => {
               <h3>NFC ID</h3>
               <p className="nfc-id">{pet.nfcId}</p>
               <p className="nfc-instructions">
-                Write this unique ID to an NFC tag and attach it to your pet's collar.
-                The tag can be scanned to access the pet's profile at:
+                {nfcSupported ? (
+                  <>
+                    Tap "Write to NFC Tag" above to program an NFC tag directly from your mobile device.
+                    Hold your NFC tag near your phone when prompted.
+                    <br />
+                    Alternatively, you can manually write this URL to an NFC tag:
+                  </>
+                ) : (
+                  'Write this URL to an NFC tag and attach it to your pet\'s collar:'
+                )}
                 <br />
                 <code>{window.location.origin}/pet/nfc/{pet.nfcId}</code>
               </p>
