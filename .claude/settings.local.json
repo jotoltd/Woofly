@@ -18,7 +18,13 @@
       "Bash(git commit:*)",
       "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require&pgbouncer=true\" npx prisma migrate deploy:*)",
       "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:5432/postgres\" npx prisma migrate deploy:*)",
-      "Bash(openssl rand:*)"
+      "Bash(openssl rand:*)",
+      "Bash(npm run build:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:5432/postgres\" npx prisma migrate:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-0-us-east-1.pooler.supabase.com:6543/postgres\" npx prisma migrate dev:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-0-us-east-1.pooler.supabase.com:6543/postgres\" npx prisma migrate:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:6543/postgres?pgbouncer=true\" npx prisma db push:*)",
+      "Bash(DATABASE_URL=\"postgres://postgres.iuabxjjxpbolvopeaimm:CZQwJOyI2JIjLb91@aws-1-us-east-1.pooler.supabase.com:5432/postgres\" npx prisma migrate resolve:*)"
     ],
     "deny": [],
     "ask": []

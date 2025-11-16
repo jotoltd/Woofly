@@ -5,6 +5,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import PetProfile from './pages/PetProfile';
 import PublicPetProfile from './pages/PublicPetProfile';
+import ActivateTag from './pages/ActivateTag';
 import './App.css';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -15,10 +16,19 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <AuthProvider>
+      <div className="aurora-background"></div>
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route
+            path="/activate"
+            element={
+              <PrivateRoute>
+                <ActivateTag />
+              </PrivateRoute>
+            }
+          />
           <Route
             path="/dashboard"
             element={

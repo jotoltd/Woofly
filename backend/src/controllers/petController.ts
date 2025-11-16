@@ -10,17 +10,44 @@ const prisma = new PrismaClient();
 
 export const createPet = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { name, species, breed, age, sex, color, description, ownerPhone, ownerEmail, vetName, vetPhone, medicalInfo } = req.body;
+    const { tagId, name, species, breed, age, sex, color, description, ownerPhone, ownerEmail, vetName, vetPhone, medicalInfo } = req.body;
+
+    if (!tagId) {
+      res.status(400).json({ error: 'Tag ID is required. Please activate a tag first.' });
+      return;
+    }
 
     if (!name || !species) {
       res.status(400).json({ error: 'Name and species are required' });
       return;
     }
 
-    // Generate unique IDs for QR and NFC
-    const qrCode = uuidv4();
-    const nfcId = uuidv4();
+    // Verify the tag exists, is activated, belongs to the user, and is not already linked
+    const tag = await prisma.tag.findUnique({
+      where: { id: tagId },
+    });
 
+    if (!tag) {
+      res.status(404).json({ error: 'Tag not found' });
+      return;
+    }
+
+    if (!tag.isActivated) {
+      res.status(400).json({ error: 'This tag has not been activated yet' });
+      return;
+    }
+
+    if (tag.userId !== req.userId) {
+      res.status(403).json({ error: 'This tag does not belong to you' });
+      return;
+    }
+
+    if (tag.petId) {
+      res.status(400).json({ error: 'This tag is already linked to a pet' });
+      return;
+    }
+
+    // Create the pet
     const pet = await prisma.pet.create({
       data: {
         name,
@@ -30,8 +57,6 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
         sex,
         color,
         description,
-        qrCode,
-        nfcId,
         userId: req.userId!,
         ownerPhone,
         ownerEmail,
@@ -41,7 +66,21 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
       },
     });
 
-    res.status(201).json(pet);
+    // Link the tag to the pet
+    await prisma.tag.update({
+      where: { id: tagId },
+      data: { petId: pet.id },
+    });
+
+    // Return pet with tag info
+    const petWithTag = await prisma.pet.findUnique({
+      where: { id: pet.id },
+      include: {
+        tag: true,
+      },
+    });
+
+    res.status(201).json(petWithTag);
   } catch (error) {
     console.error('Create pet error:', error);
     res.status(500).json({ error: 'Internal server error' });

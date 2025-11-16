@@ -1,0 +1,300 @@
+/* Northern Lights Gradient Theme */
+
+:root {
+  /* Northern Lights Color Palette */
+  --aurora-teal: #00d4aa;
+  --aurora-cyan: #00b4d8;
+  --aurora-blue: #0077b6;
+  --aurora-indigo: #4361ee;
+  --aurora-purple: #7209b7;
+  --aurora-magenta: #b5179e;
+  --aurora-pink: #f72585;
+
+  /* Dark theme colors */
+  --night-sky: #0a0e27;
+  --deep-space: #1a1f3a;
+  --midnight-blue: #252b4a;
+  --star-white: #e8f0ff;
+  --cloud-gray: #cbd5e1;
+
+  /* Gradients */
+  --aurora-gradient: linear-gradient(
+    135deg,
+    var(--aurora-teal) 0%,
+    var(--aurora-cyan) 20%,
+    var(--aurora-blue) 40%,
+    var(--aurora-indigo) 60%,
+    var(--aurora-purple) 80%,
+    var(--aurora-magenta) 100%
+  );
+
+  --aurora-gradient-vertical: linear-gradient(
+    180deg,
+    var(--aurora-teal) 0%,
+    var(--aurora-cyan) 20%,
+    var(--aurora-blue) 40%,
+    var(--aurora-indigo) 60%,
+    var(--aurora-purple) 80%,
+    var(--aurora-magenta) 100%
+  );
+
+  --aurora-gradient-radial: radial-gradient(
+    circle at 50% 50%,
+    var(--aurora-teal),
+    var(--aurora-cyan),
+    var(--aurora-blue),
+    var(--aurora-indigo),
+    var(--aurora-purple)
+  );
+
+  --aurora-glow: 0 0 20px rgba(0, 212, 170, 0.3),
+                 0 0 40px rgba(67, 97, 238, 0.2),
+                 0 0 60px rgba(114, 9, 183, 0.1);
+
+  --card-glow: 0 4px 20px rgba(67, 97, 238, 0.15);
+  --button-glow: 0 4px 15px rgba(0, 212, 170, 0.4);
+
+  /* Spacing */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 1rem;
+  --spacing-md: 1.5rem;
+  --spacing-lg: 2rem;
+  --spacing-xl: 3rem;
+
+  /* Border radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* Animated Aurora Background */
+.aurora-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--night-sky);
+  overflow: hidden;
+  z-index: -1;
+}
+
+.aurora-background::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: var(--aurora-gradient-radial);
+  opacity: 0.15;
+  animation: aurora-flow 15s ease-in-out infinite;
+}
+
+.aurora-background::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    ellipse at 30% 50%,
+    rgba(0, 212, 170, 0.1) 0%,
+    transparent 50%
+  ),
+  radial-gradient(
+    ellipse at 70% 50%,
+    rgba(114, 9, 183, 0.1) 0%,
+    transparent 50%
+  );
+  animation: aurora-pulse 10s ease-in-out infinite;
+}
+
+@keyframes aurora-flow {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(-30%, 30%) rotate(180deg);
+    opacity: 0.25;
+  }
+}
+
+@keyframes aurora-pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: var(--aurora-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+/* Glass Card Effect */
+.glass-card {
+  background: rgba(37, 43, 74, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(232, 240, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-glow);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(67, 97, 238, 0.25);
+}
+
+/* Aurora Button */
+.aurora-button {
+  position: relative;
+  background: var(--aurora-gradient);
+  color: white;
+  border: none;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  box-shadow: var(--button-glow);
+}
+
+.aurora-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.aurora-button:hover::before {
+  left: 100%;
+}
+
+.aurora-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(0, 212, 170, 0.5);
+}
+
+.aurora-button:active {
+  transform: translateY(0);
+}
+
+/* Aurora Input */
+.aurora-input {
+  background: rgba(37, 43, 74, 0.5);
+  border: 2px solid rgba(232, 240, 255, 0.1);
+  border-radius: var(--radius-md);
+  padding: 0.875rem 1.25rem;
+  color: var(--star-white);
+  font-size: 1rem;
+  transition: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  width: 100%;
+}
+
+.aurora-input:focus {
+  outline: none;
+  border-color: var(--aurora-cyan);
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+}
+
+.aurora-input::placeholder {
+  color: var(--cloud-gray);
+  opacity: 0.6;
+}
+
+/* Aurora Badge */
+.aurora-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: var(--aurora-gradient);
+  color: white;
+  border-radius: var(--radius-xl);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--button-glow);
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 3s infinite;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(232, 240, 255, 0.1) 50%,
+    transparent 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* Glow on Hover */
+.glow-on-hover {
+  transition: box-shadow var(--transition-normal);
+}
+
+.glow-on-hover:hover {
+  box-shadow: var(--aurora-glow);
+}
+
+/* Floating Animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.floating {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
