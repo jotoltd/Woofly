@@ -67,6 +67,19 @@ const Dashboard: React.FC = () => {
     fetchTags();
   }, []);
 
+  // When there is exactly one available activated tag and the form is open,
+  // auto-select it to make the flow easier for most users.
+  const availableTags = tags.filter(t => !t.petId);
+
+  useEffect(() => {
+    if (showAddForm && availableTags.length === 1 && !formData.tagId) {
+      setFormData(prev => ({
+        ...prev,
+        tagId: availableTags[0].id,
+      }));
+    }
+  }, [showAddForm, availableTags.length]);
+
   const fetchPets = async () => {
     try {
       const response = await api.get('/pets');
@@ -143,7 +156,7 @@ const Dashboard: React.FC = () => {
         {showAddForm && (
           <div className="add-pet-form glass-card">
             <h3>Register New Pet</h3>
-            {tags.filter(t => !t.petId).length === 0 ? (
+            {availableTags.length === 0 ? (
               <div className="no-tags-message">
                 <p>⚠️ You need to activate a tag before you can register a pet.</p>
                 <button
@@ -164,13 +177,18 @@ const Dashboard: React.FC = () => {
                     required
                   >
                     <option value="">Choose a tag...</option>
-                    {tags.filter(t => !t.petId).map(tag => (
+                    {availableTags.map(tag => (
                       <option key={tag.id} value={tag.id}>
                         Tag {tag.tagCode} (Activated {new Date(tag.activatedAt!).toLocaleDateString()})
                       </option>
                     ))}
                   </select>
-                  <p className="help-text">Each pet requires its own unique tag</p>
+                  <p className="help-text">
+                    Each pet requires its own unique tag.
+                    {availableTags.length === 1 && formData.tagId && (
+                      <> Wea0automatically selected your only available tag for you.</>
+                    )}
+                  </p>
                 </div>
 
                 <div className="form-row">

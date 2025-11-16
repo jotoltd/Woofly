@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import './Auth.css';
 
 const Register: React.FC = () => {
@@ -19,7 +20,20 @@ const Register: React.FC = () => {
 
     try {
       await register(email, password, name);
-      navigate('/activate');
+
+      // If user came from /activate with a pending code, activate it now
+      const pendingCode = localStorage.getItem('pendingActivationCode');
+      if (pendingCode) {
+        try {
+          await api.post('/tags/activate', { activationCode: pendingCode });
+        } catch (err: any) {
+          setError(err.response?.data?.error || 'Tag activation failed after registration');
+        } finally {
+          localStorage.removeItem('pendingActivationCode');
+        }
+      }
+
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed');
     } finally {

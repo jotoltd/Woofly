@@ -32,14 +32,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            <Route
-              path="/activate"
-              element={
-                <PrivateRoute>
-                  <ActivateTag />
-                </PrivateRoute>
-              }
-            />
+            <Route path="/activate" element={<ActivateTag />} />
             <Route
               path="/dashboard"
               element={

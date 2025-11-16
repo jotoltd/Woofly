@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import './ActivateTag.css';
 
@@ -9,6 +10,7 @@ const ActivateTag = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleActivate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +18,16 @@ const ActivateTag = () => {
     setError('');
 
     try {
-      await api.post('/tags/activate', { activationCode });
+      const code = activationCode.trim().toUpperCase();
+
+      if (!isAuthenticated) {
+        // Store pending activation code and send the user to login/register
+        localStorage.setItem('pendingActivationCode', code);
+        navigate('/login');
+        return;
+      }
+
+      await api.post('/tags/activate', { activationCode: code });
       setSuccess(true);
 
       // After 2 seconds, navigate to dashboard to create pet profile

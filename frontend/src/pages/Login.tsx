@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
 import './Auth.css';
 
 const Login: React.FC = () => {
@@ -18,7 +19,21 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/activate');
+
+      // If user came from /activate with a pending code, activate it now
+      const pendingCode = localStorage.getItem('pendingActivationCode');
+      if (pendingCode) {
+        try {
+          await api.post('/tags/activate', { activationCode: pendingCode });
+        } catch (err: any) {
+          // Surface activation error but still log user in
+          setError(err.response?.data?.error || 'Tag activation failed after login');
+        } finally {
+          localStorage.removeItem('pendingActivationCode');
+        }
+      }
+
+      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
     } finally {
