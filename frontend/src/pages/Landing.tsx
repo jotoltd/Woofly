@@ -32,11 +32,11 @@ const Landing = () => {
             <span className="aurora-badge">No Monthly Fees</span>
           </div>
           <div className="hero-cta">
-            <button className="btn" onClick={() => navigate('/register')}>
-              Get Started Free
+            <button className="btn" onClick={() => navigate('/login')}>
+              Activate Your Tag
             </button>
-            <button className="btn btn-secondary" onClick={() => navigate('/login')}>
-              Sign In
+            <button className="btn btn-secondary" onClick={() => navigate('/register')}>
+              Create Free Account
             </button>
           </div>
         </section>
@@ -104,8 +104,8 @@ const Landing = () => {
           <div className="cta-card glass-card">
             <h2 className="gradient-text">Ready to Protect Your Pet?</h2>
             <p>Join thousands of pet owners who trust WoofTrace</p>
-            <button className="btn" onClick={() => navigate('/register')}>
-              Create Free Account
+            <button className="btn" onClick={() => navigate('/login')}>
+              Activate Your Tag
             </button>
           </div>
         </section>

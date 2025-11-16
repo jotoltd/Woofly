@@ -239,3 +239,38 @@ export const getUsersWithAssets = async (req: AdminRequest, res: Response): Prom
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const adminUnlinkTagFromPet = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { tagId } = req.params;
+
+    const tag = await prisma.tag.findUnique({
+      where: { id: tagId },
+      select: { id: true, petId: true },
+    });
+
+    if (!tag) {
+      res.status(404).json({ error: 'Tag not found' });
+      return;
+    }
+
+    if (!tag.petId) {
+      res.status(400).json({ error: 'Tag is not linked to a pet' });
+      return;
+    }
+
+    await prisma.tag.update({
+      where: { id: tagId },
+      data: { petId: null },
+    });
+
+    res.json({
+      message: 'Tag unlinked from pet',
+      tagId: tag.id,
+      previousPetId: tag.petId,
+    });
+  } catch (error) {
+    console.error('Admin unlink tag from pet error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

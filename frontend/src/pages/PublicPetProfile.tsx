@@ -59,7 +59,7 @@ const PublicPetProfile: React.FC = () => {
       }
     } catch (error: any) {
       console.error('Error fetching pet:', error);
-      setError('Pet not found or QR/NFC code is invalid');
+      setError('This WoofTrace tag is not set up yet or the code is invalid.');
     } finally {
       setLoading(false);
     }
@@ -138,8 +138,14 @@ const PublicPetProfile: React.FC = () => {
     return (
       <div className="public-profile">
         <div className="error-message">
-          <h2>Pet Not Found</h2>
-          <p>{error || 'This QR or NFC code does not match any registered pets.'}</p>
+          <h2>Tag Not Set Up</h2>
+          <p>
+            {error || 'This QR or NFC code does not match any registered pets.'}
+          </p>
+          <p style={{ marginTop: '12px' }}>
+            If you are the owner, please go to <strong>wooftrace.com</strong> and tap
+            <strong> "Activate Tag"</strong> to create your account and set up your pet.
+          </p>
         </div>
       </div>
     );

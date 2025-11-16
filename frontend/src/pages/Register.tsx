@@ -19,7 +19,7 @@ const Register: React.FC = () => {
 
     try {
       await register(email, password, name);
-      navigate('/dashboard');
+      navigate('/activate');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed');
     } finally {

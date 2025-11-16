@@ -18,7 +18,7 @@ const Login: React.FC = () => {
 
     try {
       await login(email, password);
-      navigate('/dashboard');
+      navigate('/activate');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
     } finally {
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
       <div className="auth-card glass-card">
         <div className="auth-header">
           <h1 className="gradient-text">WoofTrace</h1>
-          <p className="auth-subtitle">Welcome back! Sign in to your account</p>
+          <p className="auth-subtitle">Sign in to activate your tag and manage your pets</p>
         </div>
 
         <form onSubmit={handleSubmit} className="auth-form">

@@ -148,6 +148,20 @@ const FactoryPanel: React.FC = () => {
     }
   };
 
+  const handleUnlinkTag = async (tagId: string) => {
+    if (!window.confirm('Unlink this tag from its pet? The pet will no longer be connected to this tag.')) {
+      return;
+    }
+
+    try {
+      await api.post(`/admin/factory/tags/${tagId}/unlink`);
+      await fetchUsers();
+      alert('Tag unlinked from pet.');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Failed to unlink tag');
+    }
+  };
+
   const fetchProgrammingData = async (tag: Tag) => {
     try {
       const response = await api.get(`/admin/factory/program/${tag.id}`);
@@ -326,7 +340,7 @@ const FactoryPanel: React.FC = () => {
                         <th>Email</th>
                         <th>Joined</th>
                         <th>Pets</th>
-                        <th>Tags</th>
+                        <th>Tags / Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -342,12 +356,8 @@ const FactoryPanel: React.FC = () => {
                               <ul className="user-pets-list">
                                 {user.pets.map((pet) => (
                                   <li key={pet.id}>
-                                    <strong>{pet.name}</strong> ({pet.species})
-                                    {pet.tag && (
-                                      <>
-                                        {' '}- Tag: <code>{pet.tag.tagCode}</code>
-                                      </>
-                                    )}
+                                    <strong>{pet.name}</strong>
+                                    {pet.species && ` (${pet.species})`}
                                   </li>
                                 ))}
                               </ul>
@@ -368,7 +378,17 @@ const FactoryPanel: React.FC = () => {
                                     )}
                                     {tag.pet && (
                                       <>
-                                        {' '}- Pet: <strong>{tag.pet.name}</strong> ({tag.pet.species})
+                                        {' '}- Pet: <strong>{tag.pet.name}</strong>
+                                        {tag.pet.species && ` (${tag.pet.species})`}
+                                        {' '}
+                                        <button
+                                          type="button"
+                                          className="btn-small"
+                                          onClick={() => handleUnlinkTag(tag.id)}
+                                          style={{ marginLeft: '6px' }}
+                                        >
+                                          Unlink
+                                        </button>
                                       </>
                                     )}
                                   </li>
