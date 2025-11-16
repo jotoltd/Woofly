@@ -24,11 +24,28 @@ interface Pet {
   updatedAt: string;
 }
 
+interface Tag {
+  id: string;
+  tagCode: string;
+  activationCode: string;
+  isActivated: boolean;
+  activatedAt?: string;
+  petId?: string;
+  pet?: {
+    id: string;
+    name: string;
+    species: string;
+    imageUrl?: string;
+  };
+}
+
 const Dashboard: React.FC = () => {
   const [pets, setPets] = useState<Pet[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
+    tagId: '',
     name: '',
     species: '',
     breed: '',
@@ -47,6 +64,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchPets();
+    fetchTags();
   }, []);
 
   const fetchPets = async () => {
@@ -60,11 +78,21 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  const fetchTags = async () => {
+    try {
+      const response = await api.get('/tags');
+      setTags(response.data);
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       await api.post('/pets', formData);
       setFormData({
+        tagId: '',
         name: '',
         species: '',
         breed: '',
@@ -80,6 +108,7 @@ const Dashboard: React.FC = () => {
       });
       setShowAddForm(false);
       fetchPets();
+      fetchTags(); // Refresh tags list since one is now linked
     } catch (error: any) {
       console.error('Error creating pet:', error);
       alert(error.response?.data?.error || 'Failed to create pet');
@@ -112,30 +141,59 @@ const Dashboard: React.FC = () => {
         </div>
 
         {showAddForm && (
-          <div className="add-pet-form">
+          <div className="add-pet-form glass-card">
             <h3>Register New Pet</h3>
-            <form onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Pet Name *</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Species *</label>
-                  <input
-                    type="text"
-                    value={formData.species}
-                    onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-                    placeholder="e.g., Dog, Cat"
-                    required
-                  />
-                </div>
+            {tags.filter(t => !t.petId).length === 0 ? (
+              <div className="no-tags-message">
+                <p>⚠️ You need to activate a tag before you can register a pet.</p>
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() => navigate('/activate')}
+                >
+                  Activate Tag Now
+                </button>
               </div>
+            ) : (
+              <form onSubmit={handleSubmit}>
+                <div className="form-group">
+                  <label>Select Tag *</label>
+                  <select
+                    value={formData.tagId}
+                    onChange={(e) => setFormData({ ...formData, tagId: e.target.value })}
+                    required
+                  >
+                    <option value="">Choose a tag...</option>
+                    {tags.filter(t => !t.petId).map(tag => (
+                      <option key={tag.id} value={tag.id}>
+                        Tag {tag.tagCode} (Activated {new Date(tag.activatedAt!).toLocaleDateString()})
+                      </option>
+                    ))}
+                  </select>
+                  <p className="help-text">Each pet requires its own unique tag</p>
+                </div>
+
+                <div className="form-row">
+                  <div className="form-group">
+                    <label>Pet Name *</label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Species *</label>
+                    <input
+                      type="text"
+                      value={formData.species}
+                      onChange={(e) => setFormData({ ...formData, species: e.target.value })}
+                      placeholder="e.g., Dog, Cat"
+                      required
+                    />
+                  </div>
+                </div>
 
               <div className="form-row">
                 <div className="form-group">
@@ -243,19 +301,20 @@ const Dashboard: React.FC = () => {
                 Register Pet
               </button>
             </form>
+            )}
           </div>
         )}
 
         {loading ? (
           <p>Loading pets...</p>
         ) : pets.length === 0 ? (
-          <div className="no-pets">
+          <div className="no-pets glass-card">
             <p>No pets registered yet. Click "Add Pet" to get started!</p>
           </div>
         ) : (
           <div className="pets-grid">
             {pets.map((pet) => (
-              <div key={pet.id} className="pet-card" onClick={() => navigate(`/pet/${pet.id}`)}>
+              <div key={pet.id} className="pet-card glass-card" onClick={() => navigate(`/pet/${pet.id}`)}>
                 {pet.imageUrl ? (
                   <div className="pet-card-image">
                     <img

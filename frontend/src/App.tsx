@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { AdminProvider, useAdmin } from './context/AdminContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -7,6 +8,8 @@ import Dashboard from './pages/Dashboard';
 import PetProfile from './pages/PetProfile';
 import PublicPetProfile from './pages/PublicPetProfile';
 import ActivateTag from './pages/ActivateTag';
+import AdminLogin from './pages/AdminLogin';
+import FactoryPanel from './pages/FactoryPanel';
 import './App.css';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -14,43 +17,61 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 };
 
+const AdminRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAdminAuthenticated } = useAdmin();
+  return isAdminAuthenticated ? <>{children}</> : <Navigate to="/admin/login" />;
+};
+
 function App() {
   return (
     <AuthProvider>
-      <div className="aurora-background"></div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route
-            path="/activate"
-            element={
-              <PrivateRoute>
-                <ActivateTag />
-              </PrivateRoute>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={
-              <PrivateRoute>
-                <Dashboard />
-              </PrivateRoute>
-            }
-          />
-          <Route path="/pet/qr/:qrCode" element={<PublicPetProfile />} />
-          <Route path="/pet/nfc/:nfcId" element={<PublicPetProfile />} />
-          <Route
-            path="/pet/:id"
-            element={
-              <PrivateRoute>
-                <PetProfile />
-              </PrivateRoute>
-            }
-          />
-        </Routes>
-      </Router>
+      <AdminProvider>
+        <div className="aurora-background"></div>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route
+              path="/activate"
+              element={
+                <PrivateRoute>
+                  <ActivateTag />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={
+                <PrivateRoute>
+                  <Dashboard />
+                </PrivateRoute>
+              }
+            />
+            <Route path="/pet/qr/:qrCode" element={<PublicPetProfile />} />
+            <Route path="/pet/nfc/:nfcId" element={<PublicPetProfile />} />
+            <Route
+              path="/pet/:id"
+              element={
+                <PrivateRoute>
+                  <PetProfile />
+                </PrivateRoute>
+              }
+            />
+
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<AdminLogin />} />
+            <Route
+              path="/admin/factory"
+              element={
+                <AdminRoute>
+                  <FactoryPanel />
+                </AdminRoute>
+              }
+            />
+          </Routes>
+        </Router>
+      </AdminProvider>
     </AuthProvider>
   );
 }

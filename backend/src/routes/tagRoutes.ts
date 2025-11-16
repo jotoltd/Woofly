@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth } from '../middleware/auth';
+import { authenticateToken } from '../middleware/auth';
 import {
   activateTag,
   getUserTags,
@@ -11,10 +11,10 @@ import {
 const router = express.Router();
 
 // Protected routes (require authentication)
-router.post('/activate', auth, activateTag);
-router.get('/', auth, getUserTags);
-router.post('/link', auth, linkTagToPet);
-router.delete('/:tagId/unlink', auth, unlinkTagFromPet);
+router.post('/activate', authenticateToken, activateTag);
+router.get('/', authenticateToken, getUserTags);
+router.post('/link', authenticateToken, linkTagToPet);
+router.delete('/:tagId/unlink', authenticateToken, unlinkTagFromPet);
 
 // Public routes (tag scanning)
 router.get('/scan/:tagCode', getPetByTagCode);
