@@ -16,7 +16,7 @@ const ActivateTag = () => {
     setError('');
 
     try {
-      const response = await api.post('/tags/activate', { activationCode });
+      await api.post('/tags/activate', { activationCode });
       setSuccess(true);
 
       // After 2 seconds, navigate to dashboard to create pet profile

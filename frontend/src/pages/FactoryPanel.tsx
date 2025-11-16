@@ -43,7 +43,7 @@ const FactoryPanel: React.FC = () => {
   const [loadingStats, setLoadingStats] = useState(false);
 
   // Selected tag for programming
-  const [selectedTag, setSelectedTag] = useState<Tag | null>(null);
+  const [_selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [programmingData, setProgrammingData] = useState<any>(null);
 
   useEffect(() => {
