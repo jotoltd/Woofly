@@ -92,6 +92,39 @@
   color: var(--cloud-gray);
 }
 
+.primary-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0 5px;
+}
+
+.primary-contact-btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.call-btn {
+  background: linear-gradient(135deg, #00c853 0%, #00e676 100%);
+  color: white;
+}
+
+.email-btn {
+  background: rgba(37, 43, 74, 0.95);
+  color: var(--star-white);
+  border: 1px solid rgba(232, 240, 255, 0.18);
+}
+
 .contact-details a,
 .medical-details a {
   color: var(--aurora-cyan);
