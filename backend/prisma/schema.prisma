@@ -26,6 +26,8 @@ model Pet {
   species     String
   breed       String?
   age         Int?
+  sex         String?  // Male, Female, Unknown
+  color       String?
   description String?
   imageUrl    String?
 
@@ -37,7 +39,7 @@ model Pet {
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Contact information
+  // Contact information (deprecated - use Contact model)
   ownerPhone  String?
   ownerEmail  String?
 
@@ -51,6 +53,10 @@ model Pet {
   lostDate    DateTime?
   lastSeenLocation String?
 
+  // Relations
+  contacts    Contact[]
+  locationScans LocationScan[]
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -58,4 +64,51 @@ model Pet {
   @@index([nfcId])
   @@index([userId])
   @@index([isLost])
+}
+
+model Contact {
+  id          String   @id @default(uuid())
+  petId       String
+  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  // Contact details
+  name        String
+  relation    String?  // Owner, Vet, Friend, Family, etc.
+  phone       String?
+  email       String?
+  address     String?
+  facebook    String?
+  instagram   String?
+
+  // Priority for display order
+  priority    Int      @default(0)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([petId])
+  @@index([priority])
+}
+
+model LocationScan {
+  id          String   @id @default(uuid())
+  petId       String
+  pet         Pet      @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  // Location data
+  latitude    Float?
+  longitude   Float?
+  accuracy    Float?
+
+  // Additional info
+  userAgent   String?
+  ipAddress   String?
+
+  // Email notification status
+  emailSent   Boolean  @default(false)
+
+  createdAt   DateTime @default(now())
+
+  @@index([petId])
+  @@index([createdAt])
 }
