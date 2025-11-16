@@ -29,48 +29,74 @@ const Register: React.FC = () => {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1>WoofTrace</h1>
-        <h2>Register</h2>
-        <form onSubmit={handleSubmit}>
+      <div className="auth-card glass-card">
+        <div className="auth-header">
+          <h1 className="gradient-text">WoofTrace</h1>
+          <p className="auth-subtitle">Create your free account</p>
+        </div>
+
+        <div className="auth-info">
+          <p>✨ No credit card required</p>
+          <p>🏷️ Activate your tag after registration</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && <div className="error-message">{error}</div>}
+
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name" className="form-label">Full Name</label>
             <input
               type="text"
               id="name"
+              className="form-input"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
               required
+              autoFocus
             />
           </div>
+
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="form-label">Email Address</label>
             <input
               type="email"
               id="email"
+              className="form-input"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
               required
             />
           </div>
+
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password" className="form-label">Password</label>
             <input
               type="password"
               id="password"
+              className="form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              placeholder="Create a strong password"
               required
+              minLength={6}
             />
           </div>
-          {error && <div className="error">{error}</div>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Registering...' : 'Register'}
+
+          <button type="submit" className="btn" disabled={loading}>
+            {loading ? 'Creating account...' : 'Create Free Account'}
           </button>
         </form>
-        <p>
-          Already have an account? <Link to="/login">Login</Link>
-        </p>
+
+        <div className="auth-footer">
+          <p>
+            Already have an account? <Link to="/login">Sign in</Link>
+          </p>
+          <p className="auth-note">
+            <Link to="/">← Back to home</Link>
+          </p>
+        </div>
       </div>
     </div>
   );
