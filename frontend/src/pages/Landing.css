@@ -35,6 +35,17 @@
   animation: fadeInUp 0.8s ease 0.4s backwards;
 }
 
+.hero-badges .aurora-badge {
+  background: rgba(37, 43, 74, 0.7);
+  border-radius: 999px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  border: 1px solid rgba(232, 240, 255, 0.12);
+  box-shadow: none;
+}
+
 .hero-cta {
   display: flex;
   gap: var(--spacing-md);
