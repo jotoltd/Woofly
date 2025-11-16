@@ -33,6 +33,8 @@ const Dashboard: React.FC = () => {
     species: '',
     breed: '',
     age: '',
+    sex: '',
+    color: '',
     description: '',
     ownerPhone: '',
     ownerEmail: '',
@@ -67,6 +69,8 @@ const Dashboard: React.FC = () => {
         species: '',
         breed: '',
         age: '',
+        sex: '',
+        color: '',
         description: '',
         ownerPhone: '',
         ownerEmail: '',
@@ -143,11 +147,35 @@ const Dashboard: React.FC = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Age</label>
+                  <label>Age (years)</label>
                   <input
                     type="number"
                     value={formData.age}
                     onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Sex</label>
+                  <select
+                    value={formData.sex}
+                    onChange={(e) => setFormData({ ...formData, sex: e.target.value })}
+                  >
+                    <option value="">Select...</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Unknown">Unknown</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Color</label>
+                  <input
+                    type="text"
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    placeholder="e.g., Brown, Black, White"
                   />
                 </div>
               </div>

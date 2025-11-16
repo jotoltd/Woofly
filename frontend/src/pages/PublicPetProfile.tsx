@@ -22,11 +22,26 @@ interface PublicPet {
   lastSeenLocation?: string;
 }
 
+interface Contact {
+  id: string;
+  name: string;
+  relation?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  facebook?: string;
+  instagram?: string;
+  priority: number;
+}
+
 const PublicPetProfile: React.FC = () => {
   const { qrCode, nfcId } = useParams<{ qrCode?: string; nfcId?: string }>();
   const [pet, setPet] = useState<PublicPet | null>(null);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [sharingLocation, setSharingLocation] = useState(false);
+  const [locationShared, setLocationShared] = useState(false);
 
   useEffect(() => {
     fetchPet();
@@ -37,11 +52,77 @@ const PublicPetProfile: React.FC = () => {
       const endpoint = qrCode ? `/pets/public/qr/${qrCode}` : `/pets/public/nfc/${nfcId}`;
       const response = await api.get(endpoint);
       setPet(response.data);
+
+      // Fetch contacts for this pet
+      if (response.data.id) {
+        fetchContacts(response.data.id);
+      }
     } catch (error: any) {
       console.error('Error fetching pet:', error);
       setError('Pet not found or QR/NFC code is invalid');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchContacts = async (petId: string) => {
+    try {
+      const response = await api.get(`/contacts/public/pet/${petId}`);
+      // Sort by priority (higher priority first)
+      const sortedContacts = response.data.sort((a: Contact, b: Contact) => b.priority - a.priority);
+      setContacts(sortedContacts);
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+      // Don't show error for contacts, just silently fail
+    }
+  };
+
+  const shareLocation = async () => {
+    if (!pet) return;
+
+    setSharingLocation(true);
+
+    try {
+      // Get user's location
+      if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // Send location to backend
+            await api.post(`/location/scan/${pet.id}`, {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              accuracy: position.coords.accuracy,
+            });
+
+            setLocationShared(true);
+            alert('Thank you! Your location has been shared with the pet owner. They will receive an email with your location.');
+          } catch (error) {
+            console.error('Error sharing location:', error);
+            alert('Failed to share location. Please try again.');
+          } finally {
+            setSharingLocation(false);
+          }
+        },
+        (error) => {
+          console.error('Geolocation error:', error);
+          alert('Unable to get your location. Please enable location services and try again.');
+          setSharingLocation(false);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    } catch (error) {
+      console.error('Share location error:', error);
+      alert('Failed to share location');
+      setSharingLocation(false);
     }
   };
 
@@ -136,6 +217,19 @@ const PublicPetProfile: React.FC = () => {
               </p>
             )}
           </div>
+
+          <div className="location-sharing">
+            <p className="location-prompt">
+              <strong>Found this pet?</strong> Share your current location with the owner so they can find you!
+            </p>
+            <button
+              onClick={shareLocation}
+              disabled={sharingLocation || locationShared}
+              className="share-location-btn"
+            >
+              {sharingLocation ? 'Sharing Location...' : locationShared ? 'Location Shared ✓' : '📍 Share My Location'}
+            </button>
+          </div>
         </div>
 
         {(pet.vetName || pet.vetPhone || pet.medicalInfo) && (
@@ -158,6 +252,57 @@ const PublicPetProfile: React.FC = () => {
                   <strong>Medical Notes:</strong> {pet.medicalInfo}
                 </p>
               )}
+            </div>
+          </div>
+        )}
+
+        {contacts.length > 0 && (
+          <div className="contacts-card">
+            <h3>Additional Emergency Contacts</h3>
+            <div className="contacts-list">
+              {contacts.map((contact) => (
+                <div key={contact.id} className="contact-item">
+                  <div className="contact-header">
+                    <h4>{contact.name}</h4>
+                    {contact.relation && <span className="contact-relation">{contact.relation}</span>}
+                  </div>
+                  <div className="contact-info">
+                    {contact.phone && (
+                      <p>
+                        <strong>Phone:</strong>{' '}
+                        <a href={`tel:${contact.phone}`}>{contact.phone}</a>
+                      </p>
+                    )}
+                    {contact.email && (
+                      <p>
+                        <strong>Email:</strong>{' '}
+                        <a href={`mailto:${contact.email}`}>{contact.email}</a>
+                      </p>
+                    )}
+                    {contact.address && (
+                      <p>
+                        <strong>Address:</strong> {contact.address}
+                      </p>
+                    )}
+                    {contact.facebook && (
+                      <p>
+                        <strong>Facebook:</strong>{' '}
+                        <a href={contact.facebook.startsWith('http') ? contact.facebook : `https://facebook.com/${contact.facebook}`} target="_blank" rel="noopener noreferrer">
+                          {contact.facebook}
+                        </a>
+                      </p>
+                    )}
+                    {contact.instagram && (
+                      <p>
+                        <strong>Instagram:</strong>{' '}
+                        <a href={contact.instagram.startsWith('http') ? contact.instagram : `https://instagram.com/${contact.instagram}`} target="_blank" rel="noopener noreferrer">
+                          @{contact.instagram}
+                        </a>
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}
