@@ -47,7 +47,7 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
       return;
     }
 
-    // Create the pet
+    // Create the pet with tag codes for backwards compatibility
     const pet = await prisma.pet.create({
       data: {
         name,
@@ -63,6 +63,8 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
         vetName,
         vetPhone,
         medicalInfo,
+        qrCode: tag.tagCode, // Set legacy qrCode field
+        nfcId: tag.tagCode,  // Set legacy nfcId field (both use tagCode)
       },
     });
 
@@ -114,6 +116,7 @@ export const getPetById = async (req: AuthRequest, res: Response): Promise<void>
             email: true,
           },
         },
+        tag: true, // Include tag relation
       },
     });
 
