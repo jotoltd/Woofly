@@ -27,6 +27,8 @@ function App() {
               </PrivateRoute>
             }
           />
+          <Route path="/pet/qr/:qrCode" element={<PublicPetProfile />} />
+          <Route path="/pet/nfc/:nfcId" element={<PublicPetProfile />} />
           <Route
             path="/pet/:id"
             element={
@@ -35,8 +37,6 @@ function App() {
               </PrivateRoute>
             }
           />
-          <Route path="/pet/qr/:qrCode" element={<PublicPetProfile />} />
-          <Route path="/pet/nfc/:nfcId" element={<PublicPetProfile />} />
           <Route path="/" element={<Navigate to="/dashboard" />} />
         </Routes>
       </Router>
