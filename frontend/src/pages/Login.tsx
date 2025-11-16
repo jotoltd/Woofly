@@ -29,7 +29,7 @@ const Login: React.FC = () => {
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <h1>Woofly</h1>
+        <h1>WoofTrace</h1>
         <h2>Login</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">

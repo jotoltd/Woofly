@@ -257,7 +257,7 @@ const PetProfile: React.FC = () => {
       await ndef.write({
         records: [
           { recordType: "url", data: nfcUrl },
-          { recordType: "text", data: `Woofly Pet: ${pet.name}` }
+          { recordType: "text", data: `WoofTrace Pet: ${pet.name}` }
         ]
       });
 

@@ -1,7 +1,7 @@
 {
-  "name": "woofly-backend",
+  "name": "wooftrace-backend",
   "version": "1.0.0",
-  "description": "Woofly backend API for pet registration with QR and NFC",
+  "description": "WoofTrace backend API for pet registration with QR and NFC",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

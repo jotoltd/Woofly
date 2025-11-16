@@ -29,5 +29,5 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Woofly backend server running on port ${PORT}`);
+  console.log(`WoofTrace backend server running on port ${PORT}`);
 });

@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="dashboard">
       <header className="dashboard-header">
-        <h1>Woofly Dashboard</h1>
+        <h1>WoofTrace Dashboard</h1>
         <div className="user-info">
           <span>Welcome, {user?.name}!</span>
           <button onClick={handleLogout} className="logout-btn">
