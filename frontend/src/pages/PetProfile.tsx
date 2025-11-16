@@ -268,7 +268,7 @@ const PetProfile: React.FC = () => {
             {pet.imageUrl ? (
               <div className="pet-photo-container">
                 <img
-                  src={`http://localhost:3000${pet.imageUrl}`}
+                  src={pet.imageUrl}
                   alt={pet.name}
                   className="pet-photo"
                 />

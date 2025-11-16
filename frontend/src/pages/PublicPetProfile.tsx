@@ -89,7 +89,7 @@ const PublicPetProfile: React.FC = () => {
           {pet.imageUrl && (
             <div className="public-pet-image">
               <img
-                src={`http://localhost:3000${pet.imageUrl}`}
+                src={pet.imageUrl}
                 alt={pet.name}
               />
             </div>

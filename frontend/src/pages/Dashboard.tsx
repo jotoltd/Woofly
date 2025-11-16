@@ -231,7 +231,7 @@ const Dashboard: React.FC = () => {
                 {pet.imageUrl ? (
                   <div className="pet-card-image">
                     <img
-                      src={`http://localhost:3000${pet.imageUrl}`}
+                      src={pet.imageUrl}
                       alt={pet.name}
                     />
                   </div>
