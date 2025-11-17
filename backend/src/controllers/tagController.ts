@@ -1,8 +1,43 @@
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth';
 
 const prisma = new PrismaClient();
+
+export const validateActivationCode = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { activationCode } = req.body;
+
+    if (!activationCode) {
+      res.status(400).json({ error: 'Activation code is required' });
+      return;
+    }
+
+    // Find the tag by activation code
+    const tag = await prisma.tag.findUnique({
+      where: { activationCode },
+    });
+
+    if (!tag) {
+      res.status(404).json({ error: 'Invalid activation code. Please check and try again.' });
+      return;
+    }
+
+    if (tag.isActivated) {
+      res.status(400).json({ error: 'This tag has already been activated by another user.' });
+      return;
+    }
+
+    // Code is valid and available
+    res.status(200).json({
+      valid: true,
+      message: 'Activation code verified successfully',
+    });
+  } catch (error) {
+    console.error('Validate activation code error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
 
 export const activateTag = async (req: AuthRequest, res: Response): Promise<void> => {
   try {

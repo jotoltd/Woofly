@@ -21,16 +21,28 @@ const ActivateTag = () => {
       const code = activationCode.trim().toUpperCase();
 
       if (!isAuthenticated) {
-        // Store pending activation code and send the user to login/register
-        localStorage.setItem('pendingActivationCode', code);
-        const choice = window.confirm(
-          'To save this tag, you need a free Wooftrace account.\n\n' +
-          'Click OK to create an account, or Cancel to sign in to an existing account.'
-        );
-        navigate(choice ? '/register' : '/login');
-        return;
+        // First validate the code exists before prompting for account
+        try {
+          await api.post('/tags/validate-code', { activationCode: code });
+          
+          // Code is valid! Store it and prompt for account
+          localStorage.setItem('pendingActivationCode', code);
+          const choice = window.confirm(
+            '✓ Activation code verified!\n\n' +
+            'To save this tag to your account, you need to sign in or create a free account.\n\n' +
+            'Click OK to create an account, or Cancel to sign in.'
+          );
+          navigate(choice ? '/register' : '/login');
+          return;
+        } catch (validateErr: any) {
+          // Show specific error if code is invalid
+          setError(validateErr.response?.data?.error || 'Invalid activation code');
+          setLoading(false);
+          return;
+        }
       }
 
+      // User is authenticated - activate the tag
       await api.post('/tags/activate', { activationCode: code });
       setSuccess(true);
 
