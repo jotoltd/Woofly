@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth';
+import { sendTagActivationEmail } from '../services/emailService';
 
 const prisma = new PrismaClient();
 
@@ -71,7 +72,20 @@ export const activateTag = async (req: AuthRequest, res: Response): Promise<void
         activatedAt: new Date(),
         userId: req.userId!,
       },
+      include: {
+        user: true,
+      },
     });
+
+    // Send activation success email (non-blocking)
+    if (activatedTag.user) {
+      sendTagActivationEmail({
+        to: activatedTag.user.email,
+        name: activatedTag.user.name,
+        tagCode: activatedTag.tagCode,
+        activationCode: activatedTag.activationCode,
+      }).catch(err => console.error('Failed to send tag activation email:', err));
+    }
 
     res.status(200).json({
       message: 'Tag activated successfully',
