@@ -52,10 +52,20 @@ interface UserSummary {
   }[];
 }
 
+interface Pet {
+  id: string;
+  name: string;
+  species: string;
+  breed?: string;
+  age?: number;
+  user: { id: string; name: string; email: string };
+  tag?: { id: string; tagCode: string; activationCode: string } | null;
+}
+
 const FactoryPanel: React.FC = () => {
   const { admin, adminLogout } = useAdmin();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'generate' | 'tags' | 'stats' | 'users'>('generate');
+  const [activeTab, setActiveTab] = useState<'generate' | 'tags' | 'stats' | 'users' | 'pets'>('generate');
 
   // Generate form
   const [quantity, setQuantity] = useState('10');
@@ -75,6 +85,10 @@ const FactoryPanel: React.FC = () => {
   const [users, setUsers] = useState<UserSummary[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
 
+  // Pets
+  const [pets, setPets] = useState<Pet[]>([]);
+  const [loadingPets, setLoadingPets] = useState(false);
+
   // Selected tag for programming
   const [_selectedTag, setSelectedTag] = useState<Tag | null>(null);
   const [programmingData, setProgrammingData] = useState<any>(null);
@@ -86,6 +100,8 @@ const FactoryPanel: React.FC = () => {
       fetchStats();
     } else if (activeTab === 'users') {
       fetchUsers();
+    } else if (activeTab === 'pets') {
+      fetchPets();
     }
   }, [activeTab]);
 
@@ -148,6 +164,18 @@ const FactoryPanel: React.FC = () => {
     }
   };
 
+  const fetchPets = async () => {
+    setLoadingPets(true);
+    try {
+      const response = await api.get('/admin/factory/pets');
+      setPets(response.data.pets || []);
+    } catch (error) {
+      console.error('Failed to fetch pets:', error);
+    } finally {
+      setLoadingPets(false);
+    }
+  };
+
   const handleUnlinkTag = async (tagId: string) => {
     if (!window.confirm('Unlink this tag from its pet? The pet will no longer be connected to this tag.')) {
       return;
@@ -156,9 +184,54 @@ const FactoryPanel: React.FC = () => {
     try {
       await api.post(`/admin/factory/tags/${tagId}/unlink`);
       await fetchUsers();
+      await fetchPets();
+      await fetchTags();
       alert('Tag unlinked from pet.');
     } catch (error: any) {
       alert(error.response?.data?.error || 'Failed to unlink tag');
+    }
+  };
+
+  const handleDeleteUser = async (userId: string) => {
+    if (!window.confirm('Delete this user? Only works if user has no pets or tags.')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/admin/factory/users/${userId}`);
+      await fetchUsers();
+      alert('User deleted successfully.');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Failed to delete user');
+    }
+  };
+
+  const handleDeletePet = async (petId: string) => {
+    if (!window.confirm('Delete this pet? This will unlink the tag. Cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/admin/factory/pets/${petId}`);
+      await fetchPets();
+      await fetchTags();
+      alert('Pet deleted successfully.');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Failed to delete pet');
+    }
+  };
+
+  const handleDeleteTag = async (tagId: string) => {
+    if (!window.confirm('Delete this tag? Only unused tags can be deleted.')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/admin/factory/tags/${tagId}`);
+      await fetchTags();
+      alert('Tag deleted successfully.');
+    } catch (error: any) {
+      alert(error.response?.data?.error || 'Failed to delete tag');
     }
   };
 
@@ -245,6 +318,12 @@ const FactoryPanel: React.FC = () => {
             onClick={() => setActiveTab('users')}
           >
             Users
+          </button>
+          <button
+            className={`tab ${activeTab === 'pets' ? 'active' : ''}`}
+            onClick={() => setActiveTab('pets')}
+          >
+            Pets
           </button>
         </div>
 
@@ -340,7 +419,8 @@ const FactoryPanel: React.FC = () => {
                         <th>Email</th>
                         <th>Joined</th>
                         <th>Pets</th>
-                        <th>Tags / Actions</th>
+                        <th>Tags</th>
+                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -396,6 +476,83 @@ const FactoryPanel: React.FC = () => {
                               </ul>
                             )}
                           </td>
+                          <td>
+                            <button
+                              className="btn-small btn-danger"
+                              onClick={() => handleDeleteUser(user.id)}
+                              disabled={user.pets.length > 0 || user.tags.length > 0}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'pets' && (
+          <div className="tab-content">
+            <div className="tags-section glass-card">
+              <h2>All Pets</h2>
+              {loadingPets ? (
+                <p>Loading pets...</p>
+              ) : pets.length === 0 ? (
+                <p>No pets found yet.</p>
+              ) : (
+                <div className="tags-table-container">
+                  <table className="tags-table">
+                    <thead>
+                      <tr>
+                        <th>Pet</th>
+                        <th>Species / Breed</th>
+                        <th>Owner</th>
+                        <th>Tag</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pets.map((pet) => (
+                        <tr key={pet.id}>
+                          <td><strong>{pet.name}</strong></td>
+                          <td>
+                            {pet.species}
+                            {pet.breed && <><br /><small>{pet.breed}</small></>}
+                          </td>
+                          <td>
+                            {pet.user.name}<br />
+                            <small>{pet.user.email}</small>
+                          </td>
+                          <td>
+                            {pet.tag ? (
+                              <>
+                                <code>{pet.tag.tagCode}</code>
+                                <br />
+                                <button
+                                  type="button"
+                                  className="btn-small"
+                                  onClick={() => handleUnlinkTag(pet.tag!.id)}
+                                  style={{ marginTop: '4px' }}
+                                >
+                                  Unlink Tag
+                                </button>
+                              </>
+                            ) : (
+                              <span>-</span>
+                            )}
+                          </td>
+                          <td>
+                            <button
+                              className="btn-small btn-danger"
+                              onClick={() => handleDeletePet(pet.id)}
+                            >
+                              Delete
+                            </button>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -445,9 +602,27 @@ const FactoryPanel: React.FC = () => {
                             <button
                               className="btn-small"
                               onClick={() => fetchProgrammingData(tag)}
+                              style={{ marginRight: '6px' }}
                             >
                               View
                             </button>
+                            {tag.pet && (
+                              <button
+                                className="btn-small"
+                                onClick={() => handleUnlinkTag(tag.id)}
+                                style={{ marginRight: '6px' }}
+                              >
+                                Unlink
+                              </button>
+                            )}
+                            {!tag.isActivated && !tag.pet && (
+                              <button
+                                className="btn-small btn-danger"
+                                onClick={() => handleDeleteTag(tag.id)}
+                              >
+                                Delete
+                              </button>
+                            )}
                           </td>
                         </tr>
                       ))}
