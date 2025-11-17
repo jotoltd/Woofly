@@ -360,6 +360,19 @@ const Dashboard: React.FC = () => {
 
         {loading ? (
           <p>Loading pets...</p>
+        ) : pets.length === 0 && tags.length === 0 ? (
+          <div className="no-pets glass-card">
+            <h3>👋 Get Started with WoofTrace</h3>
+            <p style={{ marginBottom: '20px' }}>You haven't activated any tags yet!</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+              <p>🏷️ <strong>Step 1:</strong> Get your WoofTrace tag and find the activation code</p>
+              <p>✅ <strong>Step 2:</strong> Click below to activate your tag</p>
+              <p>🐾 <strong>Step 3:</strong> Add your pet's profile</p>
+              <button onClick={() => navigate('/activate')} className="btn" style={{ marginTop: '10px' }}>
+                Activate Your First Tag
+              </button>
+            </div>
+          </div>
         ) : pets.length === 0 ? (
           <div className="no-pets glass-card">
             <p>No pets registered yet. Click "Add Pet" to get started!</p>
