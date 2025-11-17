@@ -164,6 +164,11 @@ model LocationScan {
   userAgent   String?
   ipAddress   String?
 
+  // Finder contact info (optional)
+  finderName  String?
+  finderPhone String?
+  finderEmail String?
+
   // Email notification status
   emailSent   Boolean  @default(false)
 

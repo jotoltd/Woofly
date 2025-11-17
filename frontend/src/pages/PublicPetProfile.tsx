@@ -42,6 +42,9 @@ const PublicPetProfile: React.FC = () => {
   const [error, setError] = useState('');
   const [sharingLocation, setSharingLocation] = useState(false);
   const [locationShared, setLocationShared] = useState(false);
+  const [finderName, setFinderName] = useState('');
+  const [finderPhone, setFinderPhone] = useState('');
+  const [finderEmail, setFinderEmail] = useState('');
 
   useEffect(() => {
     fetchPet();
@@ -97,6 +100,9 @@ const PublicPetProfile: React.FC = () => {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
               accuracy: position.coords.accuracy,
+              finderName: finderName.trim() || undefined,
+              finderPhone: finderPhone.trim() || undefined,
+              finderEmail: finderEmail.trim() || undefined,
             });
 
             setLocationShared(true);
@@ -252,6 +258,42 @@ const PublicPetProfile: React.FC = () => {
             <p className="location-prompt">
               <strong>Found this pet?</strong> Share your current location with the owner so they can find you!
             </p>
+
+            <div className="finder-contact-form">
+              <p className="finder-note">
+                You can optionally share your details so the owner can contact you directly. These will only be sent to the pet's owner and emergency contacts.
+              </p>
+              <div className="finder-fields">
+                <div className="finder-field">
+                  <label>Your Name (optional)</label>
+                  <input
+                    type="text"
+                    value={finderName}
+                    onChange={(e) => setFinderName(e.target.value)}
+                    placeholder="e.g., Sarah"
+                  />
+                </div>
+                <div className="finder-field">
+                  <label>Your Phone (optional)</label>
+                  <input
+                    type="tel"
+                    value={finderPhone}
+                    onChange={(e) => setFinderPhone(e.target.value)}
+                    placeholder="e.g., +44 7123 456789"
+                  />
+                </div>
+                <div className="finder-field">
+                  <label>Your Email (optional)</label>
+                  <input
+                    type="email"
+                    value={finderEmail}
+                    onChange={(e) => setFinderEmail(e.target.value)}
+                    placeholder="you@example.com"
+                  />
+                </div>
+              </div>
+            </div>
+
             <button
               onClick={shareLocation}
               disabled={sharingLocation || locationShared}

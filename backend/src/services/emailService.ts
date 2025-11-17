@@ -17,6 +17,9 @@ interface LocationEmailParams {
   latitude: number;
   longitude: number;
   scanId: string;
+  finderName?: string;
+  finderPhone?: string;
+  finderEmail?: string;
 }
 
 export const sendLocationEmail = async (params: LocationEmailParams): Promise<boolean> => {
@@ -26,7 +29,7 @@ export const sendLocationEmail = async (params: LocationEmailParams): Promise<bo
       return false;
     }
 
-    const { to, petName, ownerName, latitude, longitude, scanId } = params;
+    const { to, petName, ownerName, latitude, longitude, scanId, finderName, finderPhone, finderEmail } = params;
 
     if (!to.length) {
       console.warn('No recipients for location email, skipping.');
@@ -36,19 +39,38 @@ export const sendLocationEmail = async (params: LocationEmailParams): Promise<bo
     const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
     const subject = `Wooftrace Alert: ${petName} was just scanned`;
-    const text = [
+    const lines: string[] = [
       `Hi ${ownerName || 'there'},`,
       '',
       `Someone has just scanned ${petName}'s tag and shared their location.`,
       '',
       `Approximate location: ${mapsUrl}`,
       '',
-      'If you are nearby, you may want to contact them using the details shown on the public pet page.',
-      '',
+    ];
+
+    if (finderName || finderPhone || finderEmail) {
+      lines.push('Finder contact details:', '');
+      if (finderName) {
+        lines.push(`• Name: ${finderName}`);
+      }
+      if (finderPhone) {
+        lines.push(`• Phone: ${finderPhone}`);
+      }
+      if (finderEmail) {
+        lines.push(`• Email: ${finderEmail}`);
+      }
+      lines.push('');
+    } else {
+      lines.push('No contact details were provided by the person who scanned the tag.', '');
+    }
+
+    lines.push(
       `Scan ID: ${scanId}`,
       '',
       '— Wooftrace',
-    ].join('\n');
+    );
+
+    const text = lines.join('\n');
 
     await resend.emails.send({
       from: fromAddress,

@@ -35,6 +35,9 @@ interface LocationScan {
   ipAddress?: string;
   emailSent: boolean;
   createdAt: string;
+   finderName?: string;
+   finderPhone?: string;
+   finderEmail?: string;
 }
 
 interface Contact {
@@ -964,8 +967,31 @@ const PetProfile: React.FC = () => {
                         </p>
                       )}
 
+                      {scan.finderName || scan.finderPhone || scan.finderEmail ? (
+                        <div style={{ fontSize: '0.9rem', color: 'var(--cloud-gray)', marginTop: '8px' }}>
+                          <strong>Finder:</strong>{' '}
+                          {scan.finderName && <span>{scan.finderName}</span>}
+                          {scan.finderPhone && (
+                            <span>
+                              {scan.finderName ? ' · ' : ''}
+                              <a href={`tel:${scan.finderPhone}`} style={{ color: 'var(--aurora-teal)' }}>
+                                {scan.finderPhone}
+                              </a>
+                            </span>
+                          )}
+                          {scan.finderEmail && (
+                            <span>
+                              {(scan.finderName || scan.finderPhone) ? ' · ' : ''}
+                              <a href={`mailto:${scan.finderEmail}`} style={{ color: 'var(--aurora-teal)' }}>
+                                {scan.finderEmail}
+                              </a>
+                            </span>
+                          )}
+                        </div>
+                      ) : null}
+
                       {scan.userAgent && (
-                        <div style={{ fontSize: '0.85rem', color: 'var(--cloud-gray)', marginTop: '8px' }}>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--cloud-gray)', marginTop: '4px' }}>
                           Device: {scan.userAgent.substring(0, 60)}...
                         </div>
                       )}

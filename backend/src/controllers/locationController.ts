@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 export const recordLocationScan = async (req: Request, res: Response): Promise<void> => {
   try {
     const { petId } = req.params;
-    const { latitude, longitude, accuracy } = req.body;
+    const { latitude, longitude, accuracy, finderName, finderPhone, finderEmail } = req.body;
 
     // Get pet with owner email
     const pet = await prisma.pet.findUnique({
@@ -42,6 +42,9 @@ export const recordLocationScan = async (req: Request, res: Response): Promise<v
         userAgent,
         ipAddress,
         emailSent: false, // Will be updated after email service
+        finderName,
+        finderPhone,
+        finderEmail,
       },
     });
 
@@ -67,6 +70,9 @@ export const recordLocationScan = async (req: Request, res: Response): Promise<v
         latitude,
         longitude,
         scanId: locationScan.id,
+        finderName,
+        finderPhone,
+        finderEmail,
       });
 
       if (emailSent) {
