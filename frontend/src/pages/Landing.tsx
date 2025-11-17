@@ -78,6 +78,27 @@ const Landing = () => {
           </div>
         </section>
 
+        {/* Developers Section */}
+        <section className="developers-section">
+          <div className="developers-card glass-card">
+            <div className="developers-header">
+              <span className="developers-tag">For developers</span>
+              <h2 className="gradient-text">Build on the Wooftrace platform</h2>
+            </div>
+            <p>
+              Use our REST API to integrate Wooftrace tags and pet profiles into your own apps and services.
+              Manage pets, tags, contacts and scan history programmatically.
+            </p>
+            <button
+              className="btn developers-btn"
+              type="button"
+              onClick={() => navigate('/developers')}
+            >
+              View Developer API
+            </button>
+          </div>
+        </section>
+
         {/* Benefits Section */}
         <section className="benefits">
           <h2 className="section-title gradient-text">Why Pet Owners Love WoofTrace</h2>

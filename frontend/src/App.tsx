@@ -16,6 +16,7 @@ import FactoryPanel from './pages/FactoryPanel';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import FAQ from './pages/FAQ';
+import DeveloperDocs from './pages/DeveloperDocs';
 import './App.css';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +43,7 @@ const TopNav: React.FC = () => {
 
         <nav className="site-nav-links">
           <Link to="/faq">FAQ</Link>
+          <Link to="/developers">Developers</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>
           {isAdminAuthenticated && <Link to="/admin/factory">Admin</Link>}
@@ -102,10 +104,11 @@ function App() {
                   }
                 />
 
-                {/* Legal pages */}
+                {/* Info / legal pages */}
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/developers" element={<DeveloperDocs />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
@@ -127,6 +130,7 @@ function App() {
                   <a href="/privacy">Privacy Policy</a>
                   <a href="/terms">Terms of Service</a>
                   <a href="/faq">FAQ</a>
+                  <a href="/developers">Developers</a>
                 </nav>
               </div>
             </footer>

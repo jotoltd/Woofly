@@ -13,6 +13,51 @@
   animation: slideInUp 0.6s ease;
 }
 
+/* Shared content styling for legal / docs pages */
+.legal-content {
+  font-size: 0.95rem;
+  color: var(--cloud-gray);
+}
+
+.legal-content h2 {
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.3rem;
+  color: var(--star-white);
+}
+
+.legal-content h3 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  color: var(--star-white);
+}
+
+.legal-content p {
+  margin-bottom: 0.75rem;
+}
+
+.legal-content ul {
+  margin: 0 0 0.75rem 1.25rem;
+  padding: 0;
+}
+
+.legal-content li {
+  margin-bottom: 0.35rem;
+}
+
+.code-block {
+  margin: 0.75rem 0 1rem;
+  padding: 0.75rem 1rem;
+  background: rgba(10, 16, 35, 0.85);
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+  color: var(--star-white);
+}
+
 .auth-header {
   text-align: center;
   margin-bottom: var(--spacing-xl);
