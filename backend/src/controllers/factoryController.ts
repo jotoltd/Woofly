@@ -274,3 +274,267 @@ export const adminUnlinkTagFromPet = async (req: AdminRequest, res: Response): P
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+// ==================== USER MANAGEMENT ====================
+
+export const adminUpdateUser = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+    const { name, email } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const updateData: any = {};
+    if (name) updateData.name = name;
+    if (email) updateData.email = email;
+
+    const updated = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+    });
+
+    res.json({ message: 'User updated', user: { id: updated.id, name: updated.name, email: updated.email } });
+  } catch (error: any) {
+    console.error('Admin update user error:', error);
+    if (error.code === 'P2002') {
+      res.status(400).json({ error: 'Email already in use' });
+    } else {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+};
+
+export const adminDeleteUser = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { userId } = req.params;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        pets: true,
+        tags: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Safety check: only allow deletion if user has no pets or tags
+    if (user.pets.length > 0 || user.tags.length > 0) {
+      res.status(400).json({
+        error: `Cannot delete user: still has ${user.pets.length} pet(s) and ${user.tags.length} tag(s). Remove these first.`,
+      });
+      return;
+    }
+
+    await prisma.user.delete({ where: { id: userId } });
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Admin delete user error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// ==================== PET MANAGEMENT ====================
+
+export const adminGetAllPets = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const pets = await prisma.pet.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: { id: true, name: true, email: true },
+        },
+        tag: {
+          select: { id: true, tagCode: true, activationCode: true },
+        },
+      },
+    });
+
+    res.json({ pets });
+  } catch (error) {
+    console.error('Admin get all pets error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const adminUpdatePet = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { petId } = req.params;
+    const { name, species, breed, age, sex, color, description } = req.body;
+
+    const pet = await prisma.pet.findUnique({ where: { id: petId } });
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (species !== undefined) updateData.species = species;
+    if (breed !== undefined) updateData.breed = breed;
+    if (age !== undefined) updateData.age = age;
+    if (sex !== undefined) updateData.sex = sex;
+    if (color !== undefined) updateData.color = color;
+    if (description !== undefined) updateData.description = description;
+
+    const updated = await prisma.pet.update({
+      where: { id: petId },
+      data: updateData,
+    });
+
+    res.json({ message: 'Pet updated', pet: updated });
+  } catch (error) {
+    console.error('Admin update pet error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const adminTransferPet = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { petId } = req.params;
+    const { newOwnerId } = req.body;
+
+    if (!newOwnerId) {
+      res.status(400).json({ error: 'newOwnerId is required' });
+      return;
+    }
+
+    const [pet, newOwner] = await Promise.all([
+      prisma.pet.findUnique({ where: { id: petId }, include: { tag: true } }),
+      prisma.user.findUnique({ where: { id: newOwnerId } }),
+    ]);
+
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+    if (!newOwner) {
+      res.status(404).json({ error: 'New owner not found' });
+      return;
+    }
+
+    // Update pet owner
+    await prisma.pet.update({
+      where: { id: petId },
+      data: { userId: newOwnerId },
+    });
+
+    // If pet has a linked tag, transfer tag ownership too
+    if (pet.tag) {
+      await prisma.tag.update({
+        where: { id: pet.tag.id },
+        data: { userId: newOwnerId },
+      });
+    }
+
+    res.json({ message: 'Pet and associated tag transferred to new owner' });
+  } catch (error) {
+    console.error('Admin transfer pet error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const adminDeletePet = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { petId } = req.params;
+
+    const pet = await prisma.pet.findUnique({
+      where: { id: petId },
+      include: { tag: true },
+    });
+
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+
+    // Unlink tag if present
+    if (pet.tag) {
+      await prisma.tag.update({
+        where: { id: pet.tag.id },
+        data: { petId: null },
+      });
+    }
+
+    // Delete pet (cascades to contacts and location scans)
+    await prisma.pet.delete({ where: { id: petId } });
+
+    res.json({ message: 'Pet deleted successfully' });
+  } catch (error) {
+    console.error('Admin delete pet error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+// ==================== TAG MANAGEMENT ====================
+
+export const adminUpdateTag = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { tagId } = req.params;
+    const { userId, batchNumber } = req.body;
+
+    const tag = await prisma.tag.findUnique({ where: { id: tagId } });
+    if (!tag) {
+      res.status(404).json({ error: 'Tag not found' });
+      return;
+    }
+
+    const updateData: any = {};
+    if (userId !== undefined) {
+      if (userId === null) {
+        updateData.userId = null;
+      } else {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+          res.status(404).json({ error: 'User not found' });
+          return;
+        }
+        updateData.userId = userId;
+      }
+    }
+    if (batchNumber !== undefined) updateData.batchNumber = batchNumber;
+
+    const updated = await prisma.tag.update({
+      where: { id: tagId },
+      data: updateData,
+    });
+
+    res.json({ message: 'Tag updated', tag: updated });
+  } catch (error) {
+    console.error('Admin update tag error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const adminDeleteTag = async (req: AdminRequest, res: Response): Promise<void> => {
+  try {
+    const { tagId } = req.params;
+
+    const tag = await prisma.tag.findUnique({ where: { id: tagId } });
+    if (!tag) {
+      res.status(404).json({ error: 'Tag not found' });
+      return;
+    }
+
+    // Safety: only allow deletion of unused tags
+    if (tag.isActivated || tag.petId) {
+      res.status(400).json({
+        error: 'Cannot delete activated or linked tag. Unlink from pet and deactivate first.',
+      });
+      return;
+    }
+
+    await prisma.tag.delete({ where: { id: tagId } });
+    res.json({ message: 'Tag deleted successfully' });
+  } catch (error) {
+    console.error('Admin delete tag error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
