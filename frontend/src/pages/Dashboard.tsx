@@ -146,6 +146,41 @@ const Dashboard: React.FC = () => {
       </header>
 
       <div className="dashboard-content">
+        {/* Onboarding Checklist */}
+        {pets.length === 0 && tags.length > 0 && (
+          <div className="onboarding-checklist glass-card">
+            <h3>🎉 Welcome to WoofTrace!</h3>
+            <p style={{ marginBottom: '20px', color: 'var(--cloud-gray)' }}>
+              Complete these steps to get your pet protected:
+            </p>
+            <div className="checklist">
+              <div className="checklist-item completed">
+                <span className="checkmark">✓</span>
+                <span>Activate your tag</span>
+              </div>
+              <div className="checklist-item">
+                <span className="checkmark">○</span>
+                <span><strong>Add your pet's profile</strong> (name, photo, details)</span>
+              </div>
+              <div className="checklist-item">
+                <span className="checkmark">○</span>
+                <span>Add emergency contacts</span>
+              </div>
+              <div className="checklist-item">
+                <span className="checkmark">○</span>
+                <span>Download and attach QR code to tag</span>
+              </div>
+            </div>
+            <button 
+              onClick={() => setShowAddForm(true)} 
+              className="btn" 
+              style={{ marginTop: '20px', width: '100%' }}
+            >
+              Add Pet Now →
+            </button>
+          </div>
+        )}
+
         <div className="pets-header">
           <h2>My Pets</h2>
           <button onClick={() => setShowAddForm(!showAddForm)} className="add-pet-btn">

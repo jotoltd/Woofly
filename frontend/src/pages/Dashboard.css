@@ -107,6 +107,69 @@
   overflow: hidden;
 }
 
+/* Onboarding Checklist */
+.onboarding-checklist {
+  margin-bottom: var(--spacing-xl);
+  padding: var(--spacing-lg);
+  background: rgba(0, 180, 216, 0.05);
+  border: 2px solid rgba(0, 180, 216, 0.3);
+}
+
+.onboarding-checklist h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  color: var(--star-white);
+}
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius-md);
+  transition: background var(--transition-fast);
+}
+
+.checklist-item:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.checklist-item.completed {
+  background: rgba(0, 212, 170, 0.1);
+  border-left: 3px solid var(--aurora-teal);
+}
+
+.checklist-item .checkmark {
+  font-size: 1.5rem;
+  min-width: 30px;
+  text-align: center;
+  color: var(--aurora-teal);
+}
+
+.checklist-item.completed .checkmark {
+  color: var(--aurora-teal);
+}
+
+.checklist-item span:last-child {
+  color: var(--cloud-gray);
+  flex: 1;
+}
+
+.checklist-item.completed span:last-child {
+  color: var(--star-white);
+}
+
+.checklist-item strong {
+  color: var(--star-white);
+}
+
 .add-pet-btn::before {
   content: '';
   position: absolute;
