@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AdminProvider, useAdmin } from './context/AdminContext';
 import Landing from './pages/Landing';
@@ -28,6 +28,44 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   return isAdminAuthenticated ? <>{children}</> : <Navigate to="/admin/login" />;
 };
 
+const TopNav: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  const { isAdminAuthenticated } = useAdmin();
+
+  return (
+    <header className="site-header">
+      <div className="site-header-inner">
+        <Link to="/" className="site-logo">
+          <span className="site-logo-mark">🐾</span>
+          <span className="site-logo-text">Wooftrace</span>
+        </Link>
+
+        <nav className="site-nav-links">
+          <Link to="/faq">FAQ</Link>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
+          {isAdminAuthenticated && <Link to="/admin/factory">Admin</Link>}
+        </nav>
+
+        <div className="site-nav-cta">
+          {isAuthenticated ? (
+            <Link to="/dashboard" className="nav-btn">
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link to="/login" className="nav-link-muted">Log in</Link>
+              <Link to="/register" className="nav-btn">
+                Get Started
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -35,6 +73,7 @@ function App() {
         <div className="aurora-background"></div>
         <Router>
           <div className="app-shell">
+            <TopNav />
             <main className="app-main">
               <Routes>
                 <Route path="/" element={<Landing />} />

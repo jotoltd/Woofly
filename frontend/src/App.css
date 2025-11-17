@@ -23,6 +23,89 @@ body {
   z-index: 1;
 }
 
+/* Global header */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(18px);
+  background: linear-gradient(90deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.85));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.site-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.site-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--star-white);
+  text-decoration: none;
+}
+
+.site-logo-mark {
+  font-size: 1.3rem;
+}
+
+.site-logo-text {
+  letter-spacing: 0.03em;
+}
+
+.site-nav-links {
+  display: flex;
+  gap: 16px;
+  font-size: 0.9rem;
+}
+
+.site-nav-links a {
+  color: var(--cloud-gray);
+  text-decoration: none;
+}
+
+.site-nav-links a:hover {
+  color: var(--aurora-cyan);
+}
+
+.site-nav-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-link-muted {
+  font-size: 0.9rem;
+  color: var(--cloud-gray);
+}
+
+.nav-link-muted:hover {
+  color: var(--aurora-cyan);
+}
+
+.nav-btn {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--aurora-gradient);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: var(--button-glow);
+}
+
+.nav-btn:hover {
+  text-decoration: none;
+}
+
 /* App shell to allow sticky footer */
 .app-shell {
   min-height: 100vh;
