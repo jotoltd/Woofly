@@ -204,6 +204,19 @@
   box-shadow: 0 4px 12px rgba(0, 180, 216, 0.3);
 }
 
+.btn-small.btn-danger {
+  background: linear-gradient(135deg, #ff1744 0%, #f72585 100%);
+}
+
+.btn-small.btn-danger:hover {
+  box-shadow: 0 4px 12px rgba(255, 23, 68, 0.5);
+}
+
+.btn-small.btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .badge {
   display: inline-block;
   padding: var(--spacing-xs) var(--spacing-sm);
