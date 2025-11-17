@@ -23,7 +23,11 @@ const ActivateTag = () => {
       if (!isAuthenticated) {
         // Store pending activation code and send the user to login/register
         localStorage.setItem('pendingActivationCode', code);
-        navigate('/login');
+        const choice = window.confirm(
+          'To save this tag, you need a free Wooftrace account.\n\n' +
+          'Click OK to create an account, or Cancel to sign in to an existing account.'
+        );
+        navigate(choice ? '/register' : '/login');
         return;
       }
 

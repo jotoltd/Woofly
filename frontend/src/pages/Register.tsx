@@ -19,21 +19,17 @@ const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      await register(email, password, name);
-
-      // If user came from /activate with a pending code, activate it now
-      const pendingCode = localStorage.getItem('pendingActivationCode');
-      if (pendingCode) {
-        try {
-          await api.post('/tags/activate', { activationCode: pendingCode });
-        } catch (err: any) {
-          setError(err.response?.data?.error || 'Tag activation failed after registration');
-        } finally {
-          localStorage.removeItem('pendingActivationCode');
-        }
+      const response = await api.post('/auth/register', { email, password, name });
+      
+      // Check if verification is required
+      if (response.data.requiresVerification) {
+        alert(response.data.message + '\n\nYou will be redirected to the login page.');
+        navigate('/login');
+      } else {
+        // Fallback for old response format (shouldn't happen)
+        await register(email, password, name);
+        navigate('/dashboard');
       }
-
-      navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed');
     } finally {

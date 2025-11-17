@@ -46,18 +46,11 @@ export const register = async (req: Request, res: Response): Promise<void> => {
       token: verificationToken,
     }).catch(err => console.error('Failed to send verification email:', err));
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET!, {
-      expiresIn: '7d',
-    });
-
+    // Don't return token - force email verification before login
     res.status(201).json({
-      token,
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-      },
-      message: 'Registration successful. Please check your email to verify your account.',
+      message: 'Registration successful! Please check your email to verify your account before logging in.',
+      email: user.email,
+      requiresVerification: true,
     });
   } catch (error) {
     console.error('Registration error:', error);
