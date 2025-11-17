@@ -153,23 +153,29 @@ const PublicPetProfile: React.FC = () => {
 
   return (
     <div className="public-profile">
-      {pet.isLost && (
-        <div className="lost-alert-banner">
-          <h2>⚠️ THIS PET IS REPORTED LOST ⚠️</h2>
-          <div className="lost-info">
-            <p><strong>Lost Date:</strong> {pet.lostDate ? new Date(pet.lostDate).toLocaleDateString() : 'Unknown'}</p>
-            {pet.lastSeenLocation && (
-              <p><strong>Last Seen:</strong> {pet.lastSeenLocation}</p>
-            )}
+      {pet.isLost ? (
+        <>
+          <div className="lost-alert-banner">
+            <h2>⚠️ THIS PET IS REPORTED LOST ⚠️</h2>
+            <div className="lost-info">
+              <p><strong>Lost Date:</strong> {pet.lostDate ? new Date(pet.lostDate).toLocaleDateString() : 'Unknown'}</p>
+              {pet.lastSeenLocation && (
+                <p><strong>Last Seen:</strong> {pet.lastSeenLocation}</p>
+              )}
+            </div>
+            <p className="urgent-message">Please contact the owner immediately if you have found this pet!</p>
           </div>
-          <p className="urgent-message">Please contact the owner immediately if you have found this pet!</p>
+          <div className="public-header">
+            <h1>Found Pet!</h1>
+            <p>If you found this pet, please contact the owner below</p>
+          </div>
+        </>
+      ) : (
+        <div className="public-header">
+          <h1>👋 Meet {pet.name}!</h1>
+          <p>You've scanned {pet.name}'s WoofTrace tag</p>
         </div>
       )}
-
-      <div className="public-header">
-        <h1>Found Pet!</h1>
-        <p>If you found this pet, please contact the owner below</p>
-      </div>
 
       <div className="public-content">
         <div className="pet-info-card">
