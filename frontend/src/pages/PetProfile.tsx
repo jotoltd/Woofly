@@ -37,6 +37,18 @@ interface LocationScan {
   createdAt: string;
 }
 
+interface Contact {
+  id: string;
+  name: string;
+  relation?: string;
+  phone?: string;
+  email?: string;
+  address?: string;
+  facebook?: string;
+  instagram?: string;
+  priority: number;
+}
+
 const PetProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -50,6 +62,19 @@ const PetProfile: React.FC = () => {
   const [locationScans, setLocationScans] = useState<LocationScan[]>([]);
   const [loadingScans, setLoadingScans] = useState(false);
   const [showScans, setShowScans] = useState(false);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [showContactForm, setShowContactForm] = useState(false);
+  const [editingContact, setEditingContact] = useState<Contact | null>(null);
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    relation: '',
+    phone: '',
+    email: '',
+    address: '',
+    facebook: '',
+    instagram: '',
+    priority: 0,
+  });
   const [lostFormData, setLostFormData] = useState({
     lastSeenLocation: '',
   });
@@ -71,6 +96,7 @@ const PetProfile: React.FC = () => {
 
   useEffect(() => {
     fetchPet();
+    fetchContacts();
     // Check if Web NFC is supported (Android Chrome)
     if ('NDEFReader' in window) {
       setNfcSupported(true);
@@ -191,6 +217,78 @@ const PetProfile: React.FC = () => {
       fetchLocationScans();
     }
     setShowScans(!showScans);
+  };
+
+  const fetchContacts = async () => {
+    if (!id) return;
+    try {
+      const response = await api.get(`/contacts/pet/${id}`);
+      setContacts(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch contacts:', error);
+    }
+  };
+
+  const handleAddContact = () => {
+    setContactForm({
+      name: '',
+      relation: '',
+      phone: '',
+      email: '',
+      address: '',
+      facebook: '',
+      instagram: '',
+      priority: 0,
+    });
+    setEditingContact(null);
+    setShowContactForm(true);
+  };
+
+  const handleEditContact = (contact: Contact) => {
+    setContactForm({
+      name: contact.name,
+      relation: contact.relation || '',
+      phone: contact.phone || '',
+      email: contact.email || '',
+      address: contact.address || '',
+      facebook: contact.facebook || '',
+      instagram: contact.instagram || '',
+      priority: contact.priority,
+    });
+    setEditingContact(contact);
+    setShowContactForm(true);
+  };
+
+  const handleSaveContact = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!id) return;
+
+    try {
+      if (editingContact) {
+        // Update existing contact
+        await api.put(`/contacts/${editingContact.id}`, contactForm);
+      } else {
+        // Create new contact
+        await api.post(`/contacts/pet/${id}`, contactForm);
+      }
+      fetchContacts();
+      setShowContactForm(false);
+    } catch (error) {
+      console.error('Failed to save contact:', error);
+      alert('Failed to save contact');
+    }
+  };
+
+  const handleDeleteContact = async (contactId: string) => {
+    if (!confirm('Delete this emergency contact?')) return;
+
+    try {
+      await api.delete(`/contacts/${contactId}`);
+      fetchContacts();
+    } catch (error) {
+      console.error('Failed to delete contact:', error);
+      alert('Failed to delete contact');
+    }
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -554,6 +652,146 @@ const PetProfile: React.FC = () => {
                   <span>{pet.medicalInfo}</span>
                 </div>
               )}
+            </div>
+          )}
+        </div>
+
+        <div className="profile-section">
+          <div className="section-header">
+            <h2>📞 Emergency Contacts</h2>
+            <button onClick={handleAddContact} className="action-btn">
+              + Add Contact
+            </button>
+          </div>
+
+          {contacts.length === 0 ? (
+            <p style={{ color: 'var(--cloud-gray)', marginTop: '15px' }}>
+              No emergency contacts added yet. Add contacts so people who find {pet?.name} can reach you quickly!
+            </p>
+          ) : (
+            <div className="contacts-list">
+              {contacts.sort((a, b) => b.priority - a.priority).map((contact) => (
+                <div key={contact.id} className="contact-card glass-card">
+                  <div className="contact-header">
+                    <div>
+                      <h3>{contact.name}</h3>
+                      {contact.relation && (
+                        <span className="contact-relation">{contact.relation}</span>
+                      )}
+                    </div>
+                    <div className="contact-actions">
+                      <button onClick={() => handleEditContact(contact)} className="edit-icon-btn">
+                        ✏️
+                      </button>
+                      <button onClick={() => handleDeleteContact(contact.id)} className="delete-icon-btn">
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                  <div className="contact-details">
+                    {contact.phone && (
+                      <p><strong>Phone:</strong> <a href={`tel:${contact.phone}`}>{contact.phone}</a></p>
+                    )}
+                    {contact.email && (
+                      <p><strong>Email:</strong> <a href={`mailto:${contact.email}`}>{contact.email}</a></p>
+                    )}
+                    {contact.address && (
+                      <p><strong>Address:</strong> {contact.address}</p>
+                    )}
+                    {contact.facebook && (
+                      <p><strong>Facebook:</strong> {contact.facebook}</p>
+                    )}
+                    {contact.instagram && (
+                      <p><strong>Instagram:</strong> {contact.instagram}</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {showContactForm && (
+            <div className="modal-overlay" onClick={() => setShowContactForm(false)}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                <h3>{editingContact ? 'Edit Contact' : 'Add Emergency Contact'}</h3>
+                <form onSubmit={handleSaveContact} className="contact-form">
+                  <div className="form-group">
+                    <label>Name *</label>
+                    <input
+                      type="text"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Relation</label>
+                    <input
+                      type="text"
+                      value={contactForm.relation}
+                      onChange={(e) => setContactForm({ ...contactForm, relation: e.target.value })}
+                      placeholder="e.g., Friend, Family, Neighbor"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input
+                      type="tel"
+                      value={contactForm.phone}
+                      onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Address</label>
+                    <input
+                      type="text"
+                      value={contactForm.address}
+                      onChange={(e) => setContactForm({ ...contactForm, address: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Facebook</label>
+                    <input
+                      type="text"
+                      value={contactForm.facebook}
+                      onChange={(e) => setContactForm({ ...contactForm, facebook: e.target.value })}
+                      placeholder="Username or profile URL"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Instagram</label>
+                    <input
+                      type="text"
+                      value={contactForm.instagram}
+                      onChange={(e) => setContactForm({ ...contactForm, instagram: e.target.value })}
+                      placeholder="@username"
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Priority (0-10)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="10"
+                      value={contactForm.priority}
+                      onChange={(e) => setContactForm({ ...contactForm, priority: parseInt(e.target.value) })}
+                    />
+                    <small>Higher priority contacts appear first</small>
+                  </div>
+                  <div className="form-actions">
+                    <button type="submit" className="btn">Save Contact</button>
+                    <button type="button" onClick={() => setShowContactForm(false)} className="btn-secondary">Cancel</button>
+                  </div>
+                </form>
+              </div>
             </div>
           )}
         </div>
