@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AdminRequest } from '../middleware/adminAuth';
 import crypto from 'crypto';
+import { sendTagTransferEmail } from '../services/emailService';
 
 const prisma = new PrismaClient();
 
@@ -406,15 +407,21 @@ export const adminTransferPet = async (req: AdminRequest, res: Response): Promis
       return;
     }
 
-    const [pet, newOwner] = await Promise.all([
-      prisma.pet.findUnique({ where: { id: petId }, include: { tag: true } }),
-      prisma.user.findUnique({ where: { id: newOwnerId } }),
-    ]);
+    const pet = await prisma.pet.findUnique({
+      where: { id: petId },
+      include: { tag: true, user: true },
+    });
 
     if (!pet) {
       res.status(404).json({ error: 'Pet not found' });
       return;
     }
+
+    const [newOwner, oldOwner] = await Promise.all([
+      prisma.user.findUnique({ where: { id: newOwnerId } }),
+      prisma.user.findUnique({ where: { id: pet.userId } }),
+    ]);
+
     if (!newOwner) {
       res.status(404).json({ error: 'New owner not found' });
       return;
@@ -432,6 +439,27 @@ export const adminTransferPet = async (req: AdminRequest, res: Response): Promis
         where: { id: pet.tag.id },
         data: { userId: newOwnerId },
       });
+
+      // Send transfer notification emails to both old and new owners (non-blocking)
+      if (oldOwner) {
+        sendTagTransferEmail({
+          to: oldOwner.email,
+          name: oldOwner.name,
+          petName: pet.name,
+          tagCode: pet.tag.tagCode,
+          fromUser: oldOwner.name,
+          toUser: newOwner.name,
+        }).catch(err => console.error('Failed to send transfer email to old owner:', err));
+      }
+
+      sendTagTransferEmail({
+        to: newOwner.email,
+        name: newOwner.name,
+        petName: pet.name,
+        tagCode: pet.tag.tagCode,
+        fromUser: oldOwner?.name,
+        toUser: newOwner.name,
+      }).catch(err => console.error('Failed to send transfer email to new owner:', err));
     }
 
     res.json({ message: 'Pet and associated tag transferred to new owner' });

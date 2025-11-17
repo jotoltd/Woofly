@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail } from '../services/emailService';
+import { sendVerificationEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSecurityAlertEmail } from '../services/emailService';
 
 const prisma = new PrismaClient();
 
@@ -278,6 +278,14 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
         passwordResetExpires: null,
       },
     });
+
+    // Send security alert email (non-blocking)
+    sendSecurityAlertEmail({
+      to: user.email,
+      name: user.name,
+      alertType: 'password_change',
+      details: `Your password was successfully changed on ${new Date().toLocaleString()}.`,
+    }).catch(err => console.error('Failed to send security alert email:', err));
 
     res.json({ message: 'Password reset successfully! You can now log in with your new password.' });
   } catch (error) {

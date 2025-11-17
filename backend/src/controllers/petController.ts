@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AuthRequest } from '../middleware/auth';
 import { supabase } from '../utils/supabase';
 import fs from 'fs';
+import { sendPetAddedEmail, sendLostModeEmail } from '../services/emailService';
 
 const prisma = new PrismaClient();
 
@@ -79,8 +80,20 @@ export const createPet = async (req: AuthRequest, res: Response): Promise<void> 
       where: { id: pet.id },
       include: {
         tag: true,
+        user: true,
       },
     });
+
+    // Send pet added confirmation email (non-blocking)
+    if (petWithTag && petWithTag.user && petWithTag.tag) {
+      sendPetAddedEmail({
+        to: petWithTag.user.email,
+        name: petWithTag.user.name,
+        petName: petWithTag.name,
+        petSpecies: petWithTag.species,
+        tagCode: petWithTag.tag.tagCode,
+      }).catch(err => console.error('Failed to send pet added email:', err));
+    }
 
     res.status(201).json(petWithTag);
   } catch (error) {
@@ -382,7 +395,20 @@ export const toggleLostStatus = async (req: AuthRequest, res: Response): Promise
         lostDate: isLost ? (lostDate ? new Date(lostDate) : new Date()) : null,
         lastSeenLocation: isLost ? lastSeenLocation : null,
       },
+      include: {
+        user: true,
+      },
     });
+
+    // Send lost mode notification email (non-blocking)
+    if (updatedPet.user) {
+      sendLostModeEmail({
+        to: updatedPet.user.email,
+        name: updatedPet.user.name,
+        petName: updatedPet.name,
+        isLost,
+      }).catch(err => console.error('Failed to send lost mode email:', err));
+    }
 
     res.json(updatedPet);
   } catch (error) {
