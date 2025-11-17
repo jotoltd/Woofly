@@ -497,6 +497,72 @@
   justify-content: center;
 }
 
+/* Location Scans Section */
+.scans-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.scan-item {
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(0, 180, 216, 0.2);
+  border-radius: var(--radius-md);
+}
+
+.scan-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scan-date {
+  color: var(--star-white);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.scan-location {
+  margin-top: 8px;
+  color: var(--cloud-gray);
+}
+
+.scan-location strong {
+  color: var(--star-white);
+  margin-right: 8px;
+}
+
+.map-link {
+  color: var(--aurora-teal);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.map-link:hover {
+  color: var(--aurora-blue);
+  text-decoration: underline;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge-success {
+  background: rgba(0, 212, 170, 0.2);
+  color: var(--aurora-teal);
+  border: 1px solid var(--aurora-teal);
+}
+
 .confirm-delete-btn {
   padding: 10px 20px;
   background: #dc3545;

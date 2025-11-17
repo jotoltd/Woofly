@@ -446,6 +446,38 @@ export const deletePet = async (req: AuthRequest, res: Response): Promise<void> 
   }
 };
 
+export const getPetLocationScans = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const { id } = req.params;
+    const limit = parseInt(req.query.limit as string) || 50;
+
+    const pet = await prisma.pet.findUnique({
+      where: { id },
+    });
+
+    if (!pet) {
+      res.status(404).json({ error: 'Pet not found' });
+      return;
+    }
+
+    if (pet.userId !== req.userId) {
+      res.status(403).json({ error: 'Access denied' });
+      return;
+    }
+
+    const scans = await prisma.locationScan.findMany({
+      where: { petId: id },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+
+    res.json({ scans });
+  } catch (error) {
+    console.error('Get pet location scans error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const updatePrivacySettings = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;

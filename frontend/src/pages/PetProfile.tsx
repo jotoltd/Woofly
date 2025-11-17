@@ -26,6 +26,17 @@ interface Pet {
   updatedAt: string;
 }
 
+interface LocationScan {
+  id: string;
+  latitude?: number;
+  longitude?: number;
+  accuracy?: number;
+  userAgent?: string;
+  ipAddress?: string;
+  emailSent: boolean;
+  createdAt: string;
+}
+
 const PetProfile: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -36,6 +47,9 @@ const PetProfile: React.FC = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [showLostForm, setShowLostForm] = useState(false);
+  const [locationScans, setLocationScans] = useState<LocationScan[]>([]);
+  const [loadingScans, setLoadingScans] = useState(false);
+  const [showScans, setShowScans] = useState(false);
   const [lostFormData, setLostFormData] = useState({
     lastSeenLocation: '',
   });
@@ -156,6 +170,27 @@ const PetProfile: React.FC = () => {
       navigator.clipboard.writeText(link);
       alert('QR link copied to clipboard!');
     }
+  };
+
+  const fetchLocationScans = async () => {
+    if (!id) return;
+    
+    setLoadingScans(true);
+    try {
+      const response = await api.get(`/pets/${id}/scans?limit=20`);
+      setLocationScans(response.data.scans || []);
+    } catch (error) {
+      console.error('Failed to fetch location scans:', error);
+    } finally {
+      setLoadingScans(false);
+    }
+  };
+
+  const toggleScans = () => {
+    if (!showScans && locationScans.length === 0) {
+      fetchLocationScans();
+    }
+    setShowScans(!showScans);
   };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -638,6 +673,69 @@ const PetProfile: React.FC = () => {
                 </div>
               )}
             </div>
+          )}
+        </div>
+
+        <div className="profile-section">
+          <div className="section-header">
+            <h2>📍 Location Scan History</h2>
+            <button onClick={toggleScans} className="action-btn">
+              {showScans ? 'Hide History' : 'View History'}
+            </button>
+          </div>
+
+          {showScans && (
+            <>
+              {loadingScans ? (
+                <p>Loading scan history...</p>
+              ) : locationScans.length === 0 ? (
+                <p style={{ color: 'var(--cloud-gray)' }}>No scans yet. When someone scans {pet?.name}'s tag, you'll see it here!</p>
+              ) : (
+                <div className="scans-list">
+                  {locationScans.map((scan) => (
+                    <div key={scan.id} className="scan-item glass-card">
+                      <div className="scan-header">
+                        <span className="scan-date">
+                          {new Date(scan.createdAt).toLocaleString()}
+                        </span>
+                        {scan.emailSent && (
+                          <span className="badge badge-success">✉️ Email Sent</span>
+                        )}
+                      </div>
+                      
+                      {scan.latitude && scan.longitude ? (
+                        <div className="scan-location">
+                          <strong>📍 Location:</strong>
+                          <a
+                            href={`https://www.google.com/maps?q=${scan.latitude},${scan.longitude}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="map-link"
+                          >
+                            View on Google Maps
+                          </a>
+                          {scan.accuracy && (
+                            <span style={{ fontSize: '0.9rem', color: 'var(--cloud-gray)' }}>
+                              {' '}(±{Math.round(scan.accuracy)}m accuracy)
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <p style={{ color: 'var(--cloud-gray)', fontSize: '0.9rem' }}>
+                          Location not shared by finder
+                        </p>
+                      )}
+
+                      {scan.userAgent && (
+                        <div style={{ fontSize: '0.85rem', color: 'var(--cloud-gray)', marginTop: '8px' }}>
+                          Device: {scan.userAgent.substring(0, 60)}...
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
 

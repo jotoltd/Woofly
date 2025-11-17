@@ -11,6 +11,7 @@ import {
   toggleLostStatus,
   deletePet,
   updatePrivacySettings,
+  getPetLocationScans,
 } from '../controllers/petController';
 import { authenticateToken } from '../middleware/auth';
 import { upload } from '../middleware/upload';
@@ -22,6 +23,7 @@ const router = express.Router();
 router.post('/', authenticateToken, createPet);
 router.get('/', authenticateToken, getUserPets);
 router.get('/:id/qrcode', authenticateToken, generateQRCode);
+router.get('/:id/scans', authenticateToken, getPetLocationScans);
 router.post('/:id/upload', authenticateToken, upload.single('image'), uploadPetImage);
 router.patch('/:id/lost-status', authenticateToken, toggleLostStatus);
 router.patch('/:id/privacy', authenticateToken, updatePrivacySettings);
