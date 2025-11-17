@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import { sendLocationEmail } from '../services/emailService';
 
 const prisma = new PrismaClient();
 
@@ -40,19 +41,41 @@ export const recordLocationScan = async (req: Request, res: Response): Promise<v
         accuracy,
         userAgent,
         ipAddress,
-        emailSent: false, // Will be updated by email service
+        emailSent: false, // Will be updated after email service
       },
     });
 
-    // TODO: Send email notification (will implement email service)
-    // For now, we'll just log the scan
-    console.log('Location scan recorded:', {
-      pet: pet.name,
-      owner: pet.user.name,
-      email: pet.user.email,
-      location: { latitude, longitude },
-      scanId: locationScan.id,
-    });
+    // Build recipient list: owner + any contact emails
+    const recipients = new Set<string>();
+    if (pet.user.email) {
+      recipients.add(pet.user.email);
+    }
+    for (const contact of pet.contacts) {
+      if (contact.email) {
+        recipients.add(contact.email);
+      }
+    }
+
+    const to = Array.from(recipients);
+
+    // Fire-and-forget email send; don't block response if it fails
+    if (to.length) {
+      const emailSent = await sendLocationEmail({
+        to,
+        petName: pet.name,
+        ownerName: pet.user.name || 'Owner',
+        latitude,
+        longitude,
+        scanId: locationScan.id,
+      });
+
+      if (emailSent) {
+        await prisma.locationScan.update({
+          where: { id: locationScan.id },
+          data: { emailSent: true },
+        });
+      }
+    }
 
     res.status(201).json({
       message: 'Location recorded successfully',

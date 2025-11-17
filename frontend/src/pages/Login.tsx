@@ -1,14 +1,49 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import './Auth.css';
+
+const ResendVerification: React.FC<{ email: string }> = ({ email }) => {
+  const [sending, setSending] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleResend = async () => {
+    setSending(true);
+    setMessage('');
+    try {
+      const response = await api.post('/auth/resend-verification', { email });
+      setMessage(response.data.message);
+    } catch (error: any) {
+      setMessage(error.response?.data?.error || 'Failed to resend email');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="resend-verification" style={{ marginTop: '15px', padding: '15px', background: 'rgba(0, 180, 216, 0.1)', borderRadius: '8px' }}>
+      <p style={{ marginBottom: '10px', color: '#00b4d8' }}>Didn't receive the verification email?</p>
+      <button
+        type="button"
+        onClick={handleResend}
+        disabled={sending}
+        className="btn btn-secondary"
+        style={{ width: '100%' }}
+      >
+        {sending ? 'Sending...' : 'Resend Verification Email'}
+      </button>
+      {message && <p style={{ marginTop: '10px', fontSize: '0.9rem', color: '#00d4aa' }}>{message}</p>}
+    </div>
+  );
+};
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(true);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -36,6 +71,10 @@ const Login: React.FC = () => {
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Login failed');
+      // Check if error is due to unverified email
+      if (err.response?.status === 403 && err.response?.data?.emailVerified === false) {
+        setIsEmailVerified(false);
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +121,8 @@ const Login: React.FC = () => {
           <button type="submit" className="btn" disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
+
+          {!isEmailVerified && email && <ResendVerification email={email} />}
         </form>
 
         <div className="auth-footer">

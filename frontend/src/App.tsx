@@ -4,6 +4,7 @@ import { AdminProvider, useAdmin } from './context/AdminContext';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import VerifyEmail from './pages/VerifyEmail';
 import Dashboard from './pages/Dashboard';
 import PetProfile from './pages/PetProfile';
 import PublicPetProfile from './pages/PublicPetProfile';
@@ -32,6 +33,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/activate" element={<ActivateTag />} />
             <Route
               path="/dashboard"
