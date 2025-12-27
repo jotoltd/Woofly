@@ -17,6 +17,7 @@ import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 import FAQ from './pages/FAQ';
 import DeveloperDocs from './pages/DeveloperDocs';
+import WhereToBuy from './pages/WhereToBuy';
 import './App.css';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,6 +43,7 @@ const TopNav: React.FC = () => {
         </Link>
 
         <nav className="site-nav-links">
+          <Link to="/where-to-buy">Where to Buy</Link>
           <Link to="/faq">FAQ</Link>
           <Link to="/developers">Developers</Link>
           <Link to="/privacy">Privacy</Link>
@@ -109,6 +111,7 @@ function App() {
                 <Route path="/terms" element={<TermsOfService />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/developers" element={<DeveloperDocs />} />
+                <Route path="/where-to-buy" element={<WhereToBuy />} />
 
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
@@ -127,6 +130,7 @@ function App() {
               <div className="site-footer-inner">
                 <span className="site-footer-brand">© {new Date().getFullYear()} Wooftrace Ltd</span>
                 <nav className="site-footer-links">
+                  <a href="/where-to-buy">Where to Buy</a>
                   <a href="/privacy">Privacy Policy</a>
                   <a href="/terms">Terms of Service</a>
                   <a href="/faq">FAQ</a>
