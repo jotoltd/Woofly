@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wooftrace NFC Batch Programming Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .status.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+
+        .status.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .status.warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        .progress-area {
+            margin-top: 20px;
+        }
+
+        .tag-list {
+            list-style: none;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .tag-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .tag-item:last-child {
+            border-bottom: none;
+        }
+
+        .tag-item.pending {
+            background: #f9fafb;
+        }
+
+        .tag-item.writing {
+            background: #fef3c7;
+        }
+
+        .tag-item.success {
+            background: #d1fae5;
+        }
+
+        .tag-item.error {
+            background: #fee2e2;
+        }
+
+        .tag-info {
+            flex: 1;
+        }
+
+        .tag-id {
+            font-weight: 600;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .tag-url {
+            font-size: 12px;
+            color: #666;
+            font-family: 'Monaco', monospace;
+        }
+
+        .tag-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stats {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐾 Wooftrace NFC Batch Programming</h1>
+        <p class="subtitle">Program multiple NFC tags with Wooftrace URLs</p>
+
+        <div class="config-section">
+            <h3 style="margin-bottom: 15px;">Configuration</h3>
+            <div class="form-group">
+                <label for="environment">Environment</label>
+                <select id="environment" onchange="updateEnvironment()">
+                    <option value="dev">Development (localhost)</option>
+                    <option value="prod">Production (wooftrace.com)</option>
+                </select>
+            </div>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="apiUrl">API Server URL</label>
+                    <input type="text" id="apiUrl" value="http://localhost:3000" placeholder="http://localhost:3000">
+                </div>
+                <div class="form-group">
+                    <label for="frontendUrl">Frontend URL (for NFC links)</label>
+                    <input type="text" id="frontendUrl" value="http://localhost:5173" placeholder="http://localhost:5173">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="batchNumber">Batch Number (optional)</label>
+                <input type="text" id="batchNumber" placeholder="BATCH-2025-001">
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTags">0</div>
+                <div class="stat-label">Total Tags</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="successCount">0</div>
+                <div class="stat-label">Programmed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="errorCount">0</div>
+                <div class="stat-label">Failed</div>
+            </div>
+        </div>
+
+        <div id="statusArea"></div>
+
+        <div class="controls">
+            <button class="btn" id="loadTagsBtn" onclick="loadUnprogrammedTags()">Load Unprogrammed Tags</button>
+            <button class="btn btn-success" id="startBtn" onclick="startBatchProgramming()" disabled>Start Programming</button>
+        </div>
+
+        <div class="progress-area">
+            <h3 style="margin-bottom: 10px;">Tags Queue</h3>
+            <ul class="tag-list" id="tagList">
+                <li style="padding: 30px; text-align: center; color: #999;">
+                    Click "Load Unprogrammed Tags" to fetch tags from the server
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let tags = [];
+        let currentIndex = 0;
+        let adminToken = '';
+
+        function updateEnvironment() {
+            const env = document.getElementById('environment').value;
+            if (env === 'prod') {
+                document.getElementById('apiUrl').value = 'https://api.wooftrace.com';
+                document.getElementById('frontendUrl').value = 'https://wooftrace.com';
+            } else {
+                document.getElementById('apiUrl').value = 'http://localhost:3000';
+                document.getElementById('frontendUrl').value = 'http://localhost:5173';
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusArea = document.getElementById('statusArea');
+            statusArea.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function updateStats() {
+            const total = tags.length;
+            const success = tags.filter(t => t.status === 'success').length;
+            const failed = tags.filter(t => t.status === 'error').length;
+
+            document.getElementById('totalTags').textContent = total;
+            document.getElementById('successCount').textContent = success;
+            document.getElementById('errorCount').textContent = failed;
+        }
+
+        async function loadUnprogrammedTags() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            const batchNumber = document.getElementById('batchNumber').value;
+
+            // Prompt for admin credentials if not logged in
+            if (!adminToken) {
+                const email = prompt('Enter admin email:');
+                const password = prompt('Enter admin password:');
+
+                if (!email || !password) return;
+
+                try {
+                    const response = await fetch(`${apiUrl}/api/admin/auth/login`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    if (!response.ok) {
+                        showStatus('Admin login failed. Please check credentials.', 'error');
+                        return;
+                    }
+
+                    const data = await response.json();
+                    adminToken = data.token;
+                } catch (error) {
+                    showStatus(`Login error: ${error.message}`, 'error');
+                    return;
+                }
+            }
+
+            // Load tags
+            try {
+                showStatus('Loading tags from server...', 'info');
+
+                let url = `${apiUrl}/api/admin/factory/tags?activated=false&limit=100`;
+                if (batchNumber) {
+                    url += `&batch=${encodeURIComponent(batchNumber)}`;
+                }
+
+                const response = await fetch(url, {
+                    headers: {
+                        'Authorization': `Bearer ${adminToken}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load tags');
+                }
+
+                const data = await response.json();
+                tags = data.tags.map(tag => ({
+                    id: tag.id,
+                    nfcId: tag.nfcId,
+                    activationCode: tag.activationCode,
+                    status: 'pending',
+                    url: null
+                }));
+
+                if (tags.length === 0) {
+                    showStatus('No unprogrammed tags found. Generate tags first in the Factory Panel.', 'warning');
+                } else {
+                    showStatus(`Loaded ${tags.length} unprogrammed tags`, 'success');
+                    document.getElementById('startBtn').disabled = false;
+                }
+
+                renderTagList();
+                updateStats();
+            } catch (error) {
+                showStatus(`Error loading tags: ${error.message}`, 'error');
+            }
+        }
+
+        function renderTagList() {
+            const tagList = document.getElementById('tagList');
+            if (tags.length === 0) {
+                tagList.innerHTML = '<li style="padding: 30px; text-align: center; color: #999;">No tags loaded</li>';
+                return;
+            }
+
+            tagList.innerHTML = tags.map((tag, index) => `
+                <li class="tag-item ${tag.status}" id="tag-${index}">
+                    <div class="tag-info">
+                        <div class="tag-id">Tag ${index + 1}: ${tag.nfcId || 'N/A'}</div>
+                        <div class="tag-url">${tag.url || 'Waiting to program...'}</div>
+                    </div>
+                    <span class="tag-status">${tag.status.toUpperCase()}</span>
+                </li>
+            `).join('');
+        }
+
+        async function startBatchProgramming() {
+            const frontendUrl = document.getElementById('frontendUrl').value;
+
+            showStatus('Starting batch programming. Please scan tags when prompted...', 'info');
+            document.getElementById('startBtn').disabled = true;
+            document.getElementById('loadTagsBtn').disabled = true;
+
+            currentIndex = 0;
+            await programNextTag(frontendUrl);
+        }
+
+        async function programNextTag(frontendUrl) {
+            if (currentIndex >= tags.length) {
+                showStatus('Batch programming complete!', 'success');
+                document.getElementById('loadTagsBtn').disabled = false;
+                return;
+            }
+
+            const tag = tags[currentIndex];
+            tag.status = 'writing';
+            tag.url = `${frontendUrl}/pet/nfc/${tag.nfcId}`;
+            renderTagList();
+
+            showStatus(`Ready to program tag ${currentIndex + 1}/${tags.length}. Please place the NFC tag on the reader and click OK.`, 'warning');
+
+            // Wait for user confirmation
+            const confirmed = confirm(`Place tag ${currentIndex + 1} on the reader and click OK to program:\n\nNFC ID: ${tag.nfcId}\nURL: ${tag.url}`);
+
+            if (!confirmed) {
+                tag.status = 'pending';
+                renderTagList();
+                showStatus('Programming cancelled by user.', 'warning');
+                document.getElementById('loadTagsBtn').disabled = false;
+                document.getElementById('startBtn').disabled = false;
+                return;
+            }
+
+            try {
+                // Check if Web NFC is supported
+                if ('NDEFReader' in window) {
+                    const ndef = new NDEFReader();
+                    await ndef.write({
+                        records: [{ recordType: "url", data: tag.url }]
+                    });
+
+                    tag.status = 'success';
+                    showStatus(`✓ Tag ${currentIndex + 1} programmed successfully!`, 'success');
+                } else {
+                    // Fallback for desktop - simulate success
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    tag.status = 'success';
+                    showStatus(`⚠️ Web NFC not supported. Tag ${currentIndex + 1} marked as complete. Use Android Chrome for actual NFC writing.`, 'warning');
+                }
+
+                currentIndex++;
+                updateStats();
+                renderTagList();
+
+                // Auto-continue to next tag
+                setTimeout(() => programNextTag(frontendUrl), 500);
+
+            } catch (error) {
+                tag.status = 'error';
+                showStatus(`Error programming tag ${currentIndex + 1}: ${error.message}`, 'error');
+                renderTagList();
+                updateStats();
+
+                // Ask if user wants to retry or skip
+                const retry = confirm('Programming failed. Retry this tag?');
+                if (retry) {
+                    tag.status = 'pending';
+                    renderTagList();
+                    programNextTag(frontendUrl);
+                } else {
+                    currentIndex++;
+                    programNextTag(frontendUrl);
+                }
+            }
+        }
+
+        // Initialize
+        showStatus('Configure settings and click "Load Unprogrammed Tags" to begin.', 'info');
+    </script>
+</body>
+</html>
